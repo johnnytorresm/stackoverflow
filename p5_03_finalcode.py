@@ -120,7 +120,7 @@ def tagging():
         question_file.close()
 
         # FastText string command is assembled. Output written to "lbl_lst.csv"
-        batcmd = 'fasttext predict train-corpus1000k.bin' + ' question.txt 5 1>lbl_lst.csv'
+        batcmd = 'fasttext predict train-corpus25k.bin' + ' question.txt 5 1>lbl_lst.csv'
 
         # FastText commnd is executed
         result = subprocess.check_output(batcmd, shell=True)
