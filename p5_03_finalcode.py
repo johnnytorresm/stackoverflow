@@ -19,7 +19,10 @@ import numpy as np
 import pandas as pd
 import re
 import datetime
-import nltk 
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
 import csv
 import codecs
 
