@@ -4,7 +4,7 @@
 # Open Classrooms
 # Machine Learning Engineering Cursus  
 # Student: Johnny TORRES
-# Mentor: Julien Heduik
+# Mentor: Julien HEDUIK
 #----------------------------------------------------
 # Projet 5: Catégorisez automatiquement des questions
 #----------------------------------------------------
