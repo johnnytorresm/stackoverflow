@@ -25,7 +25,6 @@ nltk.download('punkt')
 nltk.download('wordnet')
 import csv
 import codecs
-import tkinter
 
 import os
 import io
@@ -37,7 +36,7 @@ from nltk.tokenize import word_tokenize
 from datetime import timedelta
 
 from ipywidgets import *
-from tkinter import Tk, filedialog
+# from tkinter import Tk, filedialog
 from IPython.display import clear_output, display
 
 import warnings
