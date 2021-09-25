@@ -1,2 +1,2 @@
 import platform
-print(platform.system())
+st.write(platform.system())
