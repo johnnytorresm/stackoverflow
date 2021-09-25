@@ -1,2 +1,2 @@
 import platform
-platform.system()
+print(platform.system())
