@@ -1,5 +1,3 @@
-]:
-
 # Installing FastText
 
 # Cloning fastText from GitHub
