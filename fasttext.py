@@ -66,7 +66,7 @@ from IPython.display import clear_output, display
 import ast
 from collections import Counter
 
-%matplotlib inline
+# %matplotlib inline
 
 import warnings
 warnings.filterwarnings("ignore")
