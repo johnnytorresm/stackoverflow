@@ -1,10 +1,12 @@
 # Installing FastText
 
-# Cloning fastText from GitHub
-! git clone https://github.com/facebookresearch/fastText.git
-
 # import os library
 import os
+
+# Cloning fastText from GitHub
+# ! git clone https://github.com/facebookresearch/fastText.git
+clone = 'git clone https://github.com/facebookresearch/fastText.git'
+os.system(clone) # Cloning
 
 # import Streamlit library
 import streamlit as st
