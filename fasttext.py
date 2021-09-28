@@ -1,15 +1,4 @@
 # Installing FastText
-
-# import os library
-import os
-
-# Cloning fastText from GitHub
-# ! git clone https://github.com/facebookresearch/fastText.git
-clone = 'git clone https://github.com/facebookresearch/fastText.git'
-os.system(clone) # Cloning
-
-# import Streamlit library
-import streamlit as st
  
 # change the current directory to specified directory
 # os.chdir(r"./fastText")
@@ -71,7 +60,16 @@ from collections import Counter
 import warnings
 warnings.filterwarnings("ignore")
 
+import streamlit as st
+
 st.write('\nLibraries have been imported')
+
+# Cloning fastText from GitHub
+# ! git clone https://github.com/facebookresearch/fastText.git
+clone = 'git clone https://github.com/facebookresearch/fastText.git'
+os.system(clone) # Cloning
+
+st.write('github repository has been cloned')
 
 #--------------------
 # Global Variables
