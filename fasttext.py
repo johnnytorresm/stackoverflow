@@ -7,7 +7,7 @@
 #-----------------------------
 # Importing libraries
 #-----------------------------
-import scipy
+# import scipy
 import numpy as np 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ import string
 import os
 import io
 import subprocess
-from scipy import sparse
+# from scipy import sparse
 import csv
 import codecs
 
