@@ -1,10 +1,14 @@
 # Installing FastText
-
-# # Cloning fastText from GitHub
-! git clone https://github.com/facebookresearch/fastText.git
-
-# import os and streamlit libraries
 import os
+
+# Cloning fastText from GitHub
+os_cmd = 'git clone https://github.com/facebookresearch/fastText.git'
+result = subprocess.check_output(os_cmd, shell=True)
+
+# ! git clone https://github.com/facebookresearch/fastText.git
+
+# import streamlit libraries
+
 import streamlit as st
  
 # change the current directory to specified directory
@@ -39,16 +43,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.preprocessing import MultiLabelBinarizer
-
-from sklearn.linear_model import SGDClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import LogisticRegressionCV
-
-from sklearn.svm import LinearSVC
-from sklearn.svm import SVC
-
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.naive_bayes import GaussianNB
 
 import fastText as ft
 
