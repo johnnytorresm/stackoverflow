@@ -1,5 +1,5 @@
 # Installing FastText
- 
+# pip install -U scikit-learn
 # change the current directory to specified directory
 # os.chdir(r"./fastText")
 # st.write("Directory changed")
@@ -7,7 +7,7 @@
 #-----------------------------
 # Importing libraries
 #-----------------------------
-# import scipy
+import sklearn
 import numpy as np 
 import pandas as pd
 import matplotlib.pyplot as plt
