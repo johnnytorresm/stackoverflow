@@ -21,7 +21,7 @@ import subprocess
 # from scipy import sparse
 import csv
 import codecs
-
+import sklearn
 import nltk
 nltk.download("stopwords")
 nltk.download("punkt")
