@@ -66,7 +66,7 @@ from sklearn.metrics import f1_score
 import ast
 from collections import Counter
 
-%matplotlib inline
+# %matplotlib inline
 
 import warnings
 warnings.filterwarnings("ignore")
