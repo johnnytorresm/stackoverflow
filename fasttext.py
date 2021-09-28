@@ -16,7 +16,11 @@ os.chdir(r"./fastText")
  
 st.write("Directory changed")
 
-! make
+# Building fastText
+os_cmd = 'make'
+result = subprocess.check_output(os_cmd, shell=True)
+# ! make
+
 #-----------------------------
 # Importing libraries
 #-----------------------------
