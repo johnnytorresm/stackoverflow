@@ -1,5 +1,6 @@
 # Installing FastText
 import os
+import subprocess
 
 # Cloning fastText from GitHub
 os_cmd = 'git clone https://github.com/facebookresearch/fastText.git'
@@ -31,7 +32,6 @@ import datetime
 import glob
 import string 
 import io
-import subprocess
 from scipy import sparse
 import csv
 import codecs
