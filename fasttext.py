@@ -1,27 +1,33 @@
 # Installing FastText
-# pip install -U scikit-learn
-# change the current directory to specified directory
-# os.chdir(r"./fastText")
-# st.write("Directory changed")
 
+# # Cloning fastText from GitHub
+! git clone https://github.com/facebookresearch/fastText.git
+
+# import os and streamlit libraries
+import os
+import streamlit as st
+ 
+# change the current directory to specified directory
+os.chdir(r"./fastText")
+ 
+st.write("Directory changed")
+
+! make
 #-----------------------------
 # Importing libraries
 #-----------------------------
-import sklearn
 import numpy as np 
 import pandas as pd
-import matplotlib.pyplot as plt
 import re
 import datetime
 import glob
 import string 
-import os
 import io
 import subprocess
-# from scipy import sparse
+from scipy import sparse
 import csv
 import codecs
-import sklearn
+
 import nltk
 nltk.download("stopwords")
 nltk.download("punkt")
@@ -33,6 +39,16 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.preprocessing import MultiLabelBinarizer
+
+from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegressionCV
+
+from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
+
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import GaussianNB
 
 import fastText as ft
 
@@ -49,28 +65,15 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 
-from ipywidgets import *
-from tkinter import Tk, filedialog
-from IPython.display import clear_output, display
-
 import ast
 from collections import Counter
 
-# %matplotlib inline
+%matplotlib inline
 
 import warnings
 warnings.filterwarnings("ignore")
 
-import streamlit as st
-
 st.write('\nLibraries have been imported')
-
-# Cloning fastText from GitHub
-# ! git clone https://github.com/facebookresearch/fastText.git
-clone = 'git clone https://github.com/facebookresearch/fastText.git'
-os.system(clone) # Cloning
-
-st.write('github repository has been cloned')
 
 #--------------------
 # Global Variables
@@ -120,25 +123,37 @@ def clean_txt(txt):
     txt = ' '.join([lemmatizer.lemmatize(w, pos='n') for w in txt_lst])
     
     return txt
+
+#-----------------------------------------
+# display_topics after LDA
+#-----------------------------------------
+def display_topics(model, feature_names, no_top_words):
+    topics = []
+    for topic_idx, topic in enumerate(model.components_):
+        print("Topic {}:".format(topic_idx))
+        topic_list = " ".join([feature_names[i] for i in topic.argsort()[:-no_top_words-1:-1]])
+        print(topic_list)
+        topics.append(topic_list)
+    return topics
     
 #-----------------------------------------
 # Print a classifier's scores
 #-----------------------------------------
 def print_score(y_true, y_pred, clf):
-    st.write("Classifier: ", clf.__class__.__name__)
-    st.write("Precision score : {}".format(precision_score(y_true, y_pred, average='weighted')))
-    st.write("Recall score : {}".format(recall_score(y_true, y_pred, average='weighted')))
-    st.write("F1 score : {}".format(f1_score(y_true, y_pred, average='weighted')))
+    print("Classifier: ", clf.__class__.__name__)
+    print("Precision score : {}".format(precision_score(y_true, y_pred, average='weighted')))
+    print("Recall score : {}".format(recall_score(y_true, y_pred, average='weighted')))
+    print("F1 score : {}".format(f1_score(y_true, y_pred, average='weighted')))
 
 #-----------------------------------------
 # Print fasttext's scores
 #-----------------------------------------
 def ft_results(N, p, r):
-    st.write("N\t" + str(N))
+    print("N\t" + str(N))
     f1 = 2 * ( p * r ) / ( p + r)   # calculate f1 score
-    st.write("P@{}\t{:.4f}".format(1, p))
-    st.write("R@{}\t{:.4f}".format(1, r))
-    st.write("F1@{}\t{:.4f}".format(1, f1))
+    print("P@{}\t{:.4f}".format(1, p))
+    print("R@{}\t{:.4f}".format(1, r))
+    print("F1@{}\t{:.4f}".format(1, f1))
     
 #-----------------------------------------
 # Receives a list of tags and returns
@@ -160,6 +175,17 @@ def most_used_tags(tags, top_tags):
         if tag in top_tags['Tags'].values:
             final_tags.append(tag)
     return final_tags
+
+#-----------------------------------------
+# Select file from a directory
+#-----------------------------------------
+def select_files(b):
+    clear_output()
+    root = Tk()
+    root.withdraw() # Hide the main window.
+    root.call('wm', 'attributes', '.', '-topmost', True) # Raise the root to the top of all windows.
+    b.files = filedialog.askopenfilename(multiple=True) # List of selected files will be set button's file attribute.
+    print(b.files) # Print the list of files selected.
     
 #-----------------------------------------
 # Remove "__label__" from FastText Labels
