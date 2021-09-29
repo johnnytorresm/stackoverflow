@@ -40,7 +40,6 @@ import datetime
 import glob
 import string 
 import io
-import scipy
 from scipy import sparse
 import csv
 import codecs
