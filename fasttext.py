@@ -1,23 +1,34 @@
-# Installing FastText
-import os
-import subprocess
-
-# Cloning fastText from GitHub
-os.system('git clone https://github.com/facebookresearch/fastText.git')
+# Installing FastText - version 1.0
 
 # import streamlit libraries
-
 import streamlit as st
- 
-# change the current directory to specified directory
-os.chdir(r"./fastText")
- 
-st.write("Directory changed")
 
-# Building fastText
-os_cmd = 'make'
-result = subprocess.check_output(os_cmd, shell=True)
-# ! make
+# import os library
+import os
+
+# Upgrade pip
+os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
+st.write('>> pip has been upgraded...')
+
+# Cloning fastText from Facebook Research GitHub
+os.system('git clone https://github.com/facebookresearch/fastText.git')
+
+# Building the fasttext modules
+os.system('make')
+
+# Verification
+os.system('pwd')
+os.system('ls -l')
+
+st.write(' FastText has been installed...')
+
+# scipy installation
+os.system('pip install scipy')
+
+# change the current directory to specified directory
+os.chdir(r"fastText")
+os.system('pwd')
+st.write("Directory changed")
 
 #-----------------------------
 # Importing libraries
@@ -29,6 +40,7 @@ import datetime
 import glob
 import string 
 import io
+import scipy
 from scipy import sparse
 import csv
 import codecs
@@ -45,7 +57,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.preprocessing import MultiLabelBinarizer
 
-import fastText as ft
+import fastText
 
 from collections import Counter
 
@@ -62,8 +74,6 @@ from sklearn.metrics import f1_score
 
 import ast
 from collections import Counter
-
-# %matplotlib inline
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -120,27 +130,6 @@ def clean_txt(txt):
     return txt
 
 #-----------------------------------------
-# display_topics after LDA
-#-----------------------------------------
-def display_topics(model, feature_names, no_top_words):
-    topics = []
-    for topic_idx, topic in enumerate(model.components_):
-        print("Topic {}:".format(topic_idx))
-        topic_list = " ".join([feature_names[i] for i in topic.argsort()[:-no_top_words-1:-1]])
-        print(topic_list)
-        topics.append(topic_list)
-    return topics
-    
-#-----------------------------------------
-# Print a classifier's scores
-#-----------------------------------------
-def print_score(y_true, y_pred, clf):
-    print("Classifier: ", clf.__class__.__name__)
-    print("Precision score : {}".format(precision_score(y_true, y_pred, average='weighted')))
-    print("Recall score : {}".format(recall_score(y_true, y_pred, average='weighted')))
-    print("F1 score : {}".format(f1_score(y_true, y_pred, average='weighted')))
-
-#-----------------------------------------
 # Print fasttext's scores
 #-----------------------------------------
 def ft_results(N, p, r):
@@ -171,17 +160,6 @@ def most_used_tags(tags, top_tags):
             final_tags.append(tag)
     return final_tags
 
-#-----------------------------------------
-# Select file from a directory
-#-----------------------------------------
-def select_files(b):
-    clear_output()
-    root = Tk()
-    root.withdraw() # Hide the main window.
-    root.call('wm', 'attributes', '.', '-topmost', True) # Raise the root to the top of all windows.
-    b.files = filedialog.askopenfilename(multiple=True) # List of selected files will be set button's file attribute.
-    print(b.files) # Print the list of files selected.
-    
 #-----------------------------------------
 # Remove "__label__" from FastText Labels
 #-----------------------------------------
@@ -375,7 +353,9 @@ batcmd = './fasttext supervised -input '+ input_file + ' -output ' + \
                                           output_file + ' -dim 10 -lr 0.9 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
                                           '> ' + result_file
 
-result = subprocess.check_output(batcmd, shell=True)
+# result = subprocess.check_output(batcmd, shell=True)
+
+result = os.system(batcmd)
 
 st.write('FastText training End...', datetime.datetime.now())
 
@@ -397,7 +377,9 @@ batcmd = './fasttext test '+ input_file + ' ' + test_file
 
 st.write('fasttext testing Begin...', datetime.datetime.now())
 
-result = subprocess.check_output(batcmd, shell=True)
+# result = subprocess.check_output(batcmd, shell=True)
+
+result = os.system(batcmd)
 
 st.write('fasttext testing End...', datetime.datetime.now())
 
@@ -429,7 +411,8 @@ question_file.close()
 batcmd = './fasttext predict '+ input_file + ' question.txt 5 1>labels.csv'
 
 # FastText commnd is executed. Output written to "labels.csv"
-result = subprocess.check_output(batcmd, shell=True)
+# result = subprocess.check_output(batcmd, shell=True)
+result = os.system(batcmd)
 
 # labels are read and split into a list
 csv_reader = csv.reader(codecs.open('labels.csv', 'rU', 'utf-8'))
