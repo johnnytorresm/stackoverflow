@@ -5,11 +5,6 @@ import subprocess
 # Cloning fastText from GitHub
 os.system('git clone https://github.com/facebookresearch/fastText.git')
 
-#os_cmd = 'git clone https://github.com/facebookresearch/fastText.git'
-#result = subprocess.check_output(os_cmd, shell=True)
-
-# ! git clone https://github.com/facebookresearch/fastText.git
-
 # import streamlit libraries
 
 import streamlit as st
