@@ -29,6 +29,8 @@ os.system('pip install scipy')
 os.chdir(r"fastText")
 os.system('pwd')
 st.write("Directory changed")
+os.system('cp -v ../corpus25.csv .')
+os.system('cp -v ../other-stop-words.txt .')
 
 #-----------------------------
 # Importing libraries
