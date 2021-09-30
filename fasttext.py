@@ -10,30 +10,11 @@ import os
 os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
 st.write('>> pip has been upgraded...')
 
-# Cloning fastText from Facebook Research GitHub
-os.system('git clone https://github.com/facebookresearch/fastText.git')
-
-# Building the fasttext modules
-os.system('make')
-
-# Verification
-os.system('pwd')
-os.system('ls -l')
-
-st.write(' FastText has been installed...')
-
 # scipy installation
 os.system('pip install scipy')
 
-# change the current directory to specified directory
-os.chdir(r"fastText")
-os.system('pwd')
-st.write("Directory changed")
-os.system('cp -v ../corpus25.csv .')
-os.system('cp -v ../other-stop-words.txt .')
-
 #-----------------------------
-# Importing libraries
+# Importing other libraries
 #-----------------------------
 import numpy as np 
 import pandas as pd
@@ -80,6 +61,25 @@ import warnings
 warnings.filterwarnings("ignore")
 
 st.write('\nLibraries have been imported')
+
+# Cloning fastText from Facebook Research GitHub
+os.system('git clone https://github.com/facebookresearch/fastText.git')
+
+# Building the fasttext modules
+os.system('make')
+
+# Verification
+os.system('pwd')
+os.system('ls -l')
+
+st.write(' FastText has been installed...')
+
+# change the current directory to specified directory
+os.chdir(r"fastText")
+os.system('pwd')
+st.write("Directory changed")
+os.system('cp -v ../corpus25.csv .')
+os.system('cp -v ../other-stop-words.txt .')
 
 #--------------------
 # Global Variables
