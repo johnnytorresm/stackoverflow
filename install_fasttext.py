@@ -28,6 +28,6 @@ st.write(' FastText has been installed...')
 os.system('cp corpus25k.csv ./fastText')
 os.system('cp other-stop-words.txt ./fastText')
 
-os.system('cd fastText')
+os.system('cd ./fastText')
 os.system('pwd')
 os.system('ls -l')
