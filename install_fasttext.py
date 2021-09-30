@@ -25,7 +25,7 @@ os.system('pip install scipy')
 
 st.write(' FastText has been installed...')
 
-os.system('cp corpus25k.cvs ./fastText')
+os.system('cp corpus25k.csv ./fastText')
 os.system('cp other-stop-words.txt ./fastText')
 
 os.system('cd fastText')
