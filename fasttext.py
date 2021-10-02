@@ -77,11 +77,11 @@ st.write(' FastText has been installed...')
 
 import fastText
 
-# change the current directory to specified directory
-p = subprocess.Popen(["cd", "fastText"], stdout=subprocess.PIPE)
-output, err = p.communicate()
-os.system('pwd')
-st.write("Directory changed")
+# # change the current directory to specified directory
+# p = subprocess.Popen(["cd", "fastText"], stdout=subprocess.PIPE)
+# output, err = p.communicate()
+# os.system('pwd')
+# st.write("Directory changed")
 
 #--------------------
 # Global Variables
