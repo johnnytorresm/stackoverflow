@@ -77,6 +77,8 @@ st.write(' FastText has been installed...')
 
 import fastText
 
+st.stop
+
 # # change the current directory to specified directory
 # p = subprocess.Popen(["cd", "fastText"], stdout=subprocess.PIPE)
 # output, err = p.communicate()
