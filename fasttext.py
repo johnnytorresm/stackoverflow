@@ -1,4 +1,4 @@
-# Installing FastText - version 1.0
+# FastText Stackoverflow - version 5.0
 
 # import streamlit libraries
 import streamlit as st
@@ -12,18 +12,7 @@ st.write('>> pip has been upgraded...')
 
 # scipy installation
 os.system('pip install scipy')
-
-# Installing FastText
-
-# # Cloning fastText from GitHub
-os.system('git clone https://github.com/facebookresearch/fastText.git')
-
-# change the current directory to specified directory
-p = subprocess.Popen(["cd", "fastText"], stdout=subprocess.PIPE)
-output, err = p.communicate()
-print("*** Running cd command ***\n", output, err)
-# os.chdir("fastText")
-print("Directory changed")
+st.write('>> scipy has been upgraded...')
 
 #-----------------------------
 # Importing other libraries
@@ -51,8 +40,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.preprocessing import MultiLabelBinarizer
 
-import fastText
-
 from collections import Counter
 
 from nltk.corpus import stopwords
@@ -74,6 +61,8 @@ warnings.filterwarnings("ignore")
 
 st.write('\nLibraries have been imported')
 
+# Installing FastText
+
 # Cloning fastText from Facebook Research GitHub
 os.system('git clone https://github.com/facebookresearch/fastText.git')
 
@@ -86,12 +75,13 @@ os.system('ls -l')
 
 st.write(' FastText has been installed...')
 
+import fastText
+
 # change the current directory to specified directory
-os.chdir(r"fastText")
+p = subprocess.Popen(["cd", "fastText"], stdout=subprocess.PIPE)
+output, err = p.communicate()
 os.system('pwd')
 st.write("Directory changed")
-# os.system('cp -v ../corpus25.csv .')
-# os.system('cp -v ../other-stop-words.txt .')
 
 #--------------------
 # Global Variables
@@ -99,7 +89,7 @@ st.write("Directory changed")
 sw  = set(stopwords.words())
 
 # Exhaustive list of English prepositions to be added to stop words
-preps = pd.read_csv('other-stop-words.txt', header=None, names=['other-stop-words'])
+preps = pd.read_csv('https://github.com/johnnytorresm/stackoverflow/blob/main/other-stop-words.txt', header=None, names=['other-stop-words'])
 preps_set = set(preps['other-stop-words'].tolist())
 sw |= preps_set
 
@@ -213,7 +203,7 @@ st.write('Functions have been defined')
 # Reading data
 #--------------------------------
 
-file2open = "corpus10k.csv"
+file2open = "https://github.com/johnnytorresm/stackoverflow/blob/main/corpus25k.csv"
 
 st.write('Reading data in...')
 posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
