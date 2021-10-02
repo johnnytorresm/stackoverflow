@@ -13,6 +13,18 @@ st.write('>> pip has been upgraded...')
 # scipy installation
 os.system('pip install scipy')
 
+# Installing FastText
+
+# # Cloning fastText from GitHub
+os.system('git clone https://github.com/facebookresearch/fastText.git')
+
+# change the current directory to specified directory
+p = subprocess.Popen(["cd", "fastText"], stdout=subprocess.PIPE)
+output, err = p.communicate()
+print("*** Running cd command ***\n", output, err)
+# os.chdir("fastText")
+print("Directory changed")
+
 #-----------------------------
 # Importing other libraries
 #-----------------------------
@@ -78,8 +90,8 @@ st.write(' FastText has been installed...')
 os.chdir(r"fastText")
 os.system('pwd')
 st.write("Directory changed")
-os.system('cp -v ../corpus25.csv .')
-os.system('cp -v ../other-stop-words.txt .')
+# os.system('cp -v ../corpus25.csv .')
+# os.system('cp -v ../other-stop-words.txt .')
 
 #--------------------
 # Global Variables
@@ -201,7 +213,7 @@ st.write('Functions have been defined')
 # Reading data
 #--------------------------------
 
-file2open = "corpus25k.csv"
+file2open = "corpus10k.csv"
 
 st.write('Reading data in...')
 posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
