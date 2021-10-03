@@ -201,7 +201,7 @@ st.write('Functions have been defined')
 # Reading data
 #--------------------------------
 
-file2open = "corpus10k.csv"
+file2open = "corpus25k.csv"
 
 st.write('Reading data in...')
 posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
