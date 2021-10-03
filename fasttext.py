@@ -14,8 +14,38 @@ st.write('>> pip has been upgraded...')
 os.system('pip install scipy')
 st.write('>> scipy has been upgraded...')
 
+# ! pwd
+import subprocess
+p = subprocess.Popen(["pwd"], stdout=subprocess.PIPE)
+output, err = p.communicate()
+st.write("*** Running pwd command ***\n", output.decode('ascii'), err)
+
+# Installing FastText
+
+# Cloning fastText from GitHub
+os.system('git clone https://github.com/facebookresearch/fastText.git')
+st.write("Cloned")
+
+p = subprocess.Popen(["pwd"], stdout=subprocess.PIPE)
+output, err = p.communicate()
+st.write("*** Running pwd command ***\n", output.decode('ascii'), err)
+
+p = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE)
+output, err = p.communicate()
+st.write("*** Running ls -l command ***\n", output.decode('ascii'), err)
+
+os.chdir("fastText")
+st.write("*** Running cd command ***\n", output.decode('ascii'), err)
+st.write("Directory changed. Installing fastText...")
+os.system('make')
+st.write("fastText installed...")
+
+p = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE)
+output, err = p.communicate()
+print("*** Running ls -l command ***\n", output.decode('ascii'), err)
+
 #-----------------------------
-# Importing other libraries
+# Importing libraries
 #-----------------------------
 import numpy as np 
 import pandas as pd
@@ -40,6 +70,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.preprocessing import MultiLabelBinarizer
 
+import fastText
+
 from collections import Counter
 
 from nltk.corpus import stopwords
@@ -56,34 +88,27 @@ from sklearn.metrics import f1_score
 import ast
 from collections import Counter
 
+%matplotlib inline
+
 import warnings
 warnings.filterwarnings("ignore")
 
 st.write('\nLibraries have been imported')
 
-# Installing FastText
-
-# Cloning fastText from Facebook Research GitHub
-os.system('git clone https://github.com/facebookresearch/fastText.git')
-
-# Building the fasttext modules
-os.system('make')
-
-# Verification
-os.system('pwd')
-os.system('ls -l')
-
-st.write(' FastText has been installed...')
-
-import fastText
-
-st.stop
-
-# # change the current directory to specified directory
-# p = subprocess.Popen(["cd", "fastText"], stdout=subprocess.PIPE)
-# output, err = p.communicate()
-# os.system('pwd')
-# st.write("Directory changed")
+from pathlib import Path
+path = Path(os.getcwd())
+parent = str(path.parent.absolute())
+original_file = parent + "/corpus10k.csv"
+p = subprocess.Popen(["cp", original_file, "."], stdout=subprocess.PIPE)
+output, err = p.communicate()
+st.write("*** copying files ***\n", output.decode('ascii'), err)
+original_file = parent + "/other-stop-words.txt"
+p = subprocess.Popen(["cp", original_file, "."], stdout=subprocess.PIPE)
+output, err = p.communicate()
+st.write("*** copying files ***\n", output.decode('ascii'), err)
+p = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE)
+output, err = p.communicate()
+st.write("*** Running ls -l command ***\n", output.decode('ascii'), err)
 
 #--------------------
 # Global Variables
@@ -91,7 +116,7 @@ st.stop
 sw  = set(stopwords.words())
 
 # Exhaustive list of English prepositions to be added to stop words
-preps = pd.read_csv('https://github.com/johnnytorresm/stackoverflow/blob/main/other-stop-words.txt', header=None, names=['other-stop-words'])
+preps = pd.read_csv('/content/other-stop-words.txt', header=None, names=['other-stop-words'])
 preps_set = set(preps['other-stop-words'].tolist())
 sw |= preps_set
 
@@ -135,14 +160,25 @@ def clean_txt(txt):
     return txt
 
 #-----------------------------------------
-# Print fasttext's scores
+# display_topics after LDA
 #-----------------------------------------
-def ft_results(N, p, r):
-    print("N\t" + str(N))
-    f1 = 2 * ( p * r ) / ( p + r)   # calculate f1 score
-    print("P@{}\t{:.4f}".format(1, p))
-    print("R@{}\t{:.4f}".format(1, r))
-    print("F1@{}\t{:.4f}".format(1, f1))
+def display_topics(model, feature_names, no_top_words):
+    topics = []
+    for topic_idx, topic in enumerate(model.components_):
+        print("Topic {}:".format(topic_idx))
+        topic_list = " ".join([feature_names[i] for i in topic.argsort()[:-no_top_words-1:-1]])
+        print(topic_list)
+        topics.append(topic_list)
+    return topics
+    
+#-----------------------------------------
+# Print a classifier's scores
+#-----------------------------------------
+def print_score(y_true, y_pred, clf):
+    st.write("Classifier: ", clf.__class__.__name__)
+    st.write("Precision score : {}".format(precision_score(y_true, y_pred, average='weighted')))
+    st.write("Recall score : {}".format(recall_score(y_true, y_pred, average='weighted')))
+    st.write("F1 score : {}".format(f1_score(y_true, y_pred, average='weighted')))
     
 #-----------------------------------------
 # Receives a list of tags and returns
@@ -152,7 +188,6 @@ def labels(Tags):
     y_labels = ' '
     for t in Tags:
         y_labels += '__label__'+ t + ' '
-    
     return y_labels
 
 #-----------------------------------------
@@ -165,6 +200,17 @@ def most_used_tags(tags, top_tags):
             final_tags.append(tag)
     return final_tags
 
+#-----------------------------------------
+# Select file from a directory
+#-----------------------------------------
+def select_files(b):
+    clear_output()
+    root = Tk()
+    root.withdraw() # Hide the main window.
+    root.call('wm', 'attributes', '.', '-topmost', True) # Raise the root to the top of all windows.
+    b.files = filedialog.askopenfilename(multiple=True) # List of selected files will be set button's file attribute.
+    st.write(b.files) # Print the list of files selected.
+    
 #-----------------------------------------
 # Remove "__label__" from FastText Labels
 #-----------------------------------------
@@ -196,7 +242,6 @@ def top_tags(x):
             i += 1
     else:
         s = []
-    
     return s
 
 st.write('Functions have been defined')
@@ -205,7 +250,7 @@ st.write('Functions have been defined')
 # Reading data
 #--------------------------------
 
-file2open = "https://github.com/johnnytorresm/stackoverflow/blob/main/corpus25k.csv"
+file2open = "/content/corpus10k.csv"
 
 st.write('Reading data in...')
 posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
@@ -219,13 +264,11 @@ st.write(posts.isnull().sum())
 
 #----------------------------------------------------------------
 # Checking if Tags have been read as a single string or a series
-#----------------------------------------------------------------
-st.write('Checking if Tags have been read as a single string or a series')
-
+#-----------------------------------------------------------------
 if isinstance(posts['Tags'].iloc[0],str): # verifies if 'Tags' is of type "string"
-    display(posts['Tags'].iloc[0])
+    st.write(posts['Tags'].iloc[0])
     posts['Tags'] = posts['Tags'].apply(lambda tag: ast.literal_eval(tag))
-    display(posts['Tags'].iloc[0])
+    st.write(posts['Tags'].iloc[0])
 
 st.write('Ready')
 
@@ -234,15 +277,16 @@ st.write('Ready')
 # count the number of occurrences per item, putting
 # the results into a dataframe
 #------------------------------------------------------
-st.write('Flatten the "Tags" columns into a Series')
 tag_series = pd.Series([item for sublist in posts['Tags'] for item in sublist])
 tag_df = tag_series.groupby(tag_series).size().rename_axis('Tags').reset_index(name='Nº of occurrences')
 tag_df = tag_df.sort_values(by=['Nº of occurrences'], ascending=False)
 tag_df.head(20)
 
-# Nº of Tags that appear more than 10 times across all messages
+# Nº of Tags that appear more than 100 times across all messages
+
 series = tag_df['Nº of occurrences'].apply(lambda x: True if x > 10 else False)
 counting = len(series[series == True].index)
+
 st.write('Nº of Tags that appear more than 10 times across all messages:', counting)
 
 #-----------------------------------------
@@ -267,25 +311,23 @@ st.write(posts.head()), st.write(y)
 #------------------------------------
 # Apply MultiLabelBinarizer to Tags
 #------------------------------------
-st.write('Apply MultiLabelBinarizer to Tags')
 mlb = MultiLabelBinarizer()
 y = mlb.fit_transform(posts['Tags'])
-y[0:10,0:10]
+st.write(y[0:10,0:10])
 
 #------------
 # TD-IDF 
 #------------
-st.write('Apply TF-IDF to corpus...')
 tfidf = TfidfVectorizer(analyzer="word", max_features=1000, ngram_range=(1,1))
 X = tfidf.fit_transform(posts['Text'])
-st.write('Ready')
+st.write('TF-IDF ready')
 
 #------------------------------
 # Split into train and test
 #------------------------------
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 X_train.shape,  X_test.shape,  y_train.shape, y_test.shape
-st.write('Splitted into train and test...')
+st.write('Splitting into train and test')
 
 #-------------------------------------------------------
 # Preparation of tags for fasttext 
@@ -300,13 +342,14 @@ test['Labels'] = test['Tags'].apply(lambda x: labels(x))
 train = train.dropna()
 test = test.dropna()
 
-st.write(train[['Tags', 'Labels', 'Text']].head(5))
-st.write(test[['Tags', 'Labels', 'Text']].head(5))
+st.write(train[['Tags', 'Labels', 'Text']].head(10))
+st.write(test[['Tags', 'Labels', 'Text']].head(10))
 
 #-------------------------------------------------------
 # It writes Labels and Text in FastText format to train.txt and test.txt files
 # Those files will be the input for FastText routines
 #-------------------------------------------------------
+
 train_file = os.path.splitext(file2open)[0] + '.train'
 test_file  = os.path.splitext(file2open)[0] + '.test'
 
@@ -355,16 +398,12 @@ output_file = filename
 result_file = filename + ".result"
 
 batcmd = './fasttext supervised -input '+ input_file + ' -output ' + \
-                                          output_file + ' -dim 10 -lr 0.9 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
+                                          output_file + ' -dim 10 -lr 1 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
                                           '> ' + result_file
 
-# result = subprocess.check_output(batcmd, shell=True)
-
-result = os.system(batcmd)
+result = subprocess.check_output(batcmd, shell=True)
 
 st.write('FastText training End...', datetime.datetime.now())
-
-st.write('Ready')
 
 #-------------------------------------------------------
 # Testing the fast text model
@@ -380,13 +419,11 @@ test_file  = filename + '.test'
 
 batcmd = './fasttext test '+ input_file + ' ' + test_file 
 
-st.write('fasttext testing Begin...', datetime.datetime.now())
+st.write('fastText Begin...', datetime.datetime.now())
 
-# result = subprocess.check_output(batcmd, shell=True)
+result = subprocess.check_output(batcmd, shell=True)
 
-result = os.system(batcmd)
-
-st.write('fasttext testing End...', datetime.datetime.now())
+st.write('fastText End...', datetime.datetime.now())
 
 st.write(result.decode('utf-8'))
 
@@ -401,7 +438,9 @@ question_file = open("question.txt", "w")
 input_file = filename + '.bin'
 
 # User is asked
-question = input("Please, enter your question:\n")
+question = st.text_area("Please, enter your question below", "fin")
+st.write('The question was:')
+st.write(question)
 
 # Question is cleaned and lemmatized
 question2 = clean_txt(question)
@@ -416,8 +455,7 @@ question_file.close()
 batcmd = './fasttext predict '+ input_file + ' question.txt 5 1>labels.csv'
 
 # FastText commnd is executed. Output written to "labels.csv"
-# result = subprocess.check_output(batcmd, shell=True)
-result = os.system(batcmd)
+result = subprocess.check_output(batcmd, shell=True)
 
 # labels are read and split into a list
 csv_reader = csv.reader(codecs.open('labels.csv', 'rU', 'utf-8'))
