@@ -1,4 +1,4 @@
-# FastText Stackoverflow - version 5.0# import streamlit
+# FastText Stackoverflow - version 5.0
 import streamlit as st
 
 # import os library
