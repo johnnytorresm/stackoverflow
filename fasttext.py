@@ -43,8 +43,8 @@ os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
 st.write('pip has been upgraded...')
 
 # scipy installation
-os.system('pip install scipy')
-st.write('scipy has been installed...')
+# os.system('pip install scipy')
+# st.write('scipy has been installed...')
 
 import numpy as np 
 import pandas as pd
