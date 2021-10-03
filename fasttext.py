@@ -24,11 +24,9 @@ os.system('pip install scipy')
 st.write(' FastText has been installed...')
 
 os.chdir("fastText")
-st.write("Directory changed...")
+st.write("Working directory changed to fastText...")
 
-p = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE)
-output, err = p.communicate()
-print("*** Running ls -l command ***\n", output.decode('ascii'), err)
+os.system('ls -l')
 
 from pathlib import Path
 
@@ -36,15 +34,15 @@ path = Path(os.getcwd())
 parent = str(path.parent.absolute())
 
 original_file = parent + "/corpus10k.csv"
-p = subprocess.Popen(["cp", original_file, "."], stdout=subprocess.PIPE)
-output, err = p.communicate()
-st.write("*** copying files ***\n", output.decode('ascii'), err)
+cmd = "cp " + original_file + " . "
+os.system(cmd)
 
 original_file = parent + "/other-stop-words.txt"
-p = subprocess.Popen(["cp", original_file, "."], stdout=subprocess.PIPE)
-output, err = p.communicate()
+cmd = "cp " + original_file + " . "
+os.system(cmd)
+
 st.write("*** copying files ***\n", output.decode('ascii'), err)
 
-p = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE)
-output, err = p.communicate()
-st.write("*** Running ls -l command ***\n", output.decode('ascii'), err)
+os.system('ls -l *.txt')
+os.system('ls -l *.csv')
+
