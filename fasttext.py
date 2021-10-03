@@ -28,11 +28,11 @@ st.write("Working directory changed to fastText...")
 
 # os.system('ls -l')
 
-original_file = "https://github.com/johnnytorresm/stackoverflow/blob/main/other-stop-words.txt"
+original_file = "/app/stackoverflow/other-stop-words.txt"
 cmd = "cp " + original_file + " . "
 os.system(cmd)
 
-original_file = "https://github.com/johnnytorresm/stackoverflow/blob/main/corpus25k.csv"
+original_file = "/app/stackoverflow/corpus25k.csv"
 cmd = "cp " + original_file + " . "
 os.system(cmd)
 
