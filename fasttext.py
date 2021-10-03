@@ -57,7 +57,7 @@ nltk.download("wordnet")
 
 from datetime import timedelta
 
-os.system("pip3 install -U scikit-learn")
+# os.system("pip3 install -U scikit-learn")
 
 from sklearn.feature_extraction.text import TfidfTransformer  
 from sklearn.feature_extraction.text import CountVectorizer
