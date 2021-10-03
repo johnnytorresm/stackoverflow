@@ -4,10 +4,6 @@ import streamlit as st
 # import os library
 import os
 
-# Upgrade pip
-os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
-st.write('pip has been upgraded...')
-
 # Cloning fastText from Facebook Research GitHub
 os.system('git clone https://github.com/facebookresearch/fastText.git')
 
@@ -17,9 +13,6 @@ os.system('make')
 # Verification
 os.system('pwd')
 os.system('ls -l')
-
-# scipy installation
-os.system('pip install scipy')
 
 st.write(' FastText has been installed...')
 
@@ -44,6 +37,15 @@ os.system('ls -l *.csv')
 #-----------------------------
 # Importing libraries
 #-----------------------------
+
+# Upgrade pip
+os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
+st.write('pip has been upgraded...')
+
+# scipy installation
+os.system('pip install scipy')
+st.write('scipy has been installed...')
+
 import numpy as np 
 import pandas as pd
 import re
