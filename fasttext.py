@@ -7,6 +7,9 @@ import os
 # Cloning fastText from Facebook Research GitHub
 os.system('git clone https://github.com/facebookresearch/fastText.git')
 
+os.chdir("fastText")
+st.write("Working directory changed to fastText...")
+
 # Building the fasttext modules
 os.system('make')
 
@@ -15,11 +18,6 @@ os.system('pwd')
 os.system('ls -l')
 
 st.write(' FastText has been installed...')
-
-os.chdir("fastText")
-st.write("Working directory changed to fastText...")
-
-# os.system('ls -l')
 
 original_file = "/app/stackoverflow/other-stop-words.txt"
 cmd = "cp " + original_file + " . "
@@ -42,10 +40,6 @@ os.system('ls -l *.csv')
 os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
 st.write('pip has been upgraded...')
 
-# scipy installation
-# os.system('pip install scipy')
-# st.write('scipy has been installed...')
-
 import numpy as np 
 import pandas as pd
 import re
@@ -53,7 +47,6 @@ import datetime
 import glob
 import string 
 import io
-from scipy import sparse
 import csv
 import codecs
 
@@ -69,7 +62,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.preprocessing import MultiLabelBinarizer
 
-# import fastText
+import fastText
 
 from collections import Counter
 
