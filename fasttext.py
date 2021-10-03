@@ -23,10 +23,10 @@ os.system('pip install scipy')
 
 st.write(' FastText has been installed...')
 
-os.chdir("fastText")
-st.write("Working directory changed to fastText...")
+# os.chdir("fastText")
+# st.write("Working directory changed to fastText...")
 
-os.system('ls -l')
+# os.system('ls -l')
 
 from pathlib import Path
 
@@ -34,11 +34,11 @@ path = Path(os.getcwd())
 parent = str(path.parent.absolute())
 
 original_file = parent + "/corpus10k.csv"
-cmd = "cp " + original_file + " . "
+cmd = "cp " + original_file + " ./fasText "
 os.system(cmd)
 
 original_file = parent + "/other-stop-words.txt"
-cmd = "cp " + original_file + " . "
+cmd = "cp " + original_file + " ./fastText "
 os.system(cmd)
 
 st.write("*** copying files ***\n", output.decode('ascii'), err)
