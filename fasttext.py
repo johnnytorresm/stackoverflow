@@ -85,8 +85,6 @@ from sklearn.metrics import f1_score
 import ast
 from collections import Counter
 
-%matplotlib inline
-
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -98,7 +96,7 @@ st.write('\nLibraries have been imported')
 sw  = set(stopwords.words())
 
 # Exhaustive list of English prepositions to be added to stop words
-preps = pd.read_csv('/content/other-stop-words.txt', header=None, names=['other-stop-words'])
+preps = pd.read_csv('other-stop-words.txt', header=None, names=['other-stop-words'])
 preps_set = set(preps['other-stop-words'].tolist())
 sw |= preps_set
 
@@ -142,18 +140,6 @@ def clean_txt(txt):
     return txt
 
 #-----------------------------------------
-# display_topics after LDA
-#-----------------------------------------
-def display_topics(model, feature_names, no_top_words):
-    topics = []
-    for topic_idx, topic in enumerate(model.components_):
-        print("Topic {}:".format(topic_idx))
-        topic_list = " ".join([feature_names[i] for i in topic.argsort()[:-no_top_words-1:-1]])
-        print(topic_list)
-        topics.append(topic_list)
-    return topics
-    
-#-----------------------------------------
 # Print a classifier's scores
 #-----------------------------------------
 def print_score(y_true, y_pred, clf):
@@ -181,17 +167,6 @@ def most_used_tags(tags, top_tags):
         if tag in top_tags['Tags'].values:
             final_tags.append(tag)
     return final_tags
-
-#-----------------------------------------
-# Select file from a directory
-#-----------------------------------------
-def select_files(b):
-    clear_output()
-    root = Tk()
-    root.withdraw() # Hide the main window.
-    root.call('wm', 'attributes', '.', '-topmost', True) # Raise the root to the top of all windows.
-    b.files = filedialog.askopenfilename(multiple=True) # List of selected files will be set button's file attribute.
-    st.write(b.files) # Print the list of files selected.
     
 #-----------------------------------------
 # Remove "__label__" from FastText Labels
@@ -232,7 +207,7 @@ st.write('Functions have been defined')
 # Reading data
 #--------------------------------
 
-file2open = "/content/corpus10k.csv"
+file2open = "corpus10k.csv"
 
 st.write('Reading data in...')
 posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
