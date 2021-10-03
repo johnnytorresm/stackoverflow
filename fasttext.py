@@ -63,8 +63,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.preprocessing import MultiLabelBinarizer
 
-import fastText
-
 from collections import Counter
 
 from nltk.corpus import stopwords
