@@ -379,6 +379,13 @@ st.write('fastText End...', datetime.datetime.now())
 
 st.write(result.decode('utf-8'))
 
+original_file = "/app/stackoverflow/filename" + '.bin'
+
+# Save the model file to personal github
+cmd = "cp " + original_file + "https://github.com/johnnytorresm/stackoverflow/blob/main"
+os.system(cmd)
+st.write('FastText model saved to GitHub...')
+
 #-------------------------------------------------------
 # Predicting labels
 #-------------------------------------------------------
