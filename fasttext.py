@@ -341,7 +341,6 @@ st.write('FastText training End...', datetime.datetime.now())
 #-------------------------------------------------------
 # Testing the fast text model
 #-------------------------------------------------------
-
 # Command for testing
 input_file = filename + '.bin'
 test_file  = filename + '.test'
@@ -371,7 +370,7 @@ cmd = 'git commit -m ' + original_file
 st.write(cmd)
 os.system(cmd)
 
-cmd = 'git push origin main'
+cmd = 'git push origin ' + 'https://github.com/johnnytorresm/stackoverflow'
 st.write(cmd)
 os.system(cmd)
 
@@ -380,7 +379,6 @@ st.write('FastText model saved to GitHub...')
 #-------------------------------------------------------
 # Predicting labels
 #-------------------------------------------------------
-
 # File where question is written
 question_file = open("question.txt", "w")
 
