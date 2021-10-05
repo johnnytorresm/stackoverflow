@@ -200,7 +200,6 @@ st.write('Functions have been defined')
 #--------------------------------
 # Reading data
 #--------------------------------
-
 file2open = "corpus25k.csv"
 
 st.write('Reading data in...')
@@ -339,6 +338,8 @@ st.write('Ready ', test_file)
 st.write('FastText training Begin...', datetime.datetime.now())
 
 # Command for training 
+
+import subprocess
 
 filename = os.path.splitext(file2open)[0]
 
