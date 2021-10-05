@@ -370,10 +370,11 @@ os.system('git add .')
 cmd = 'git commit -m ' + original_file 
 st.write(cmd)
 os.system(cmd)
-# cmd = "cp " + original_file + "  https://github.com/johnnytorresm/stackoverflow/main/" + filename + '.bin'
+
 cmd = 'git push origin https://github.com/johnnytorresm/stackoverflow/main/'
 st.write(cmd)
 os.system(cmd)
+
 st.write('FastText model saved to GitHub...')
 
 #-------------------------------------------------------
