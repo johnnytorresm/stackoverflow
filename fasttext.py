@@ -376,8 +376,8 @@ cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow
 st.write(cmd)
 print(cmd)
 os.system(cmd)
-    
-cmd = 'git push origin ' 
+
+cmd = 'git push -u origin main' 
 st.write(cmd)
 print(cmd)
 os.system(cmd)
