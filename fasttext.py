@@ -52,11 +52,9 @@ st.write('pip has been upgraded...')
 
 st.write('\nLibraries have been imported...')
 
-st.write('\nImporting FastText...')
-
 # Cloning fastText from Facebook Research GitHub
+st.write('\nCloning fastText from Facebook Research GitHub...')
 os.system('git clone https://github.com/facebookresearch/fastText.git')
-
 os.chdir("fastText")
 st.write("Working directory changed to fastText...")
 
@@ -67,7 +65,7 @@ os.system('make')
 os.system('pwd')
 os.system('ls -l')
 
-st.write(' FastText has been installed...')
+st.write('FastText has been installed...')
 
 original_file = "/app/stackoverflow/other-stop-words.txt"
 cmd = "cp " + original_file + " . "
@@ -277,11 +275,11 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 X_train.shape,  X_test.shape,  y_train.shape, y_test.shape
 st.write('Splitting into train and test')
 
-#-------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------
 # Preparation of tags for fasttext 
 # The string "__label__" is attached to each tag to create a new column named 'Labels'.
 # Columns 'Labels' and 'Text' are then written to an external txt file for fasttext analysis (in OS mode)
-#-------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------
 train, test = train_test_split(posts, test_size=0.2)
 
 train['Labels'] = train['Tags'].apply(lambda x: labels(x))
@@ -312,7 +310,6 @@ train.to_csv(train_file,
              quoting=csv.QUOTE_NONE,
              quotechar=' '
             )
-
 st.write('Ready ', train_file)
 
 test.to_csv(test_file,
@@ -326,7 +323,6 @@ test.to_csv(test_file,
             quoting=csv.QUOTE_NONE,
             quotechar=' '
            )
-
 st.write('Ready ', test_file)
 
 #-------------------------------------------------------
@@ -340,13 +336,10 @@ filename = os.path.splitext(file2open)[0]
 input_file = filename + '.train'
 output_file = filename
 result_file = filename + ".result"
-
 batcmd = './fasttext supervised -input '+ input_file + ' -output ' + \
                                           output_file + ' -dim 10 -lr 1 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
                                           '> ' + result_file
-
 result = subprocess.check_output(batcmd, shell=True)
-
 st.write('FastText training End...', datetime.datetime.now())
 
 #-------------------------------------------------------
@@ -354,27 +347,17 @@ st.write('FastText training End...', datetime.datetime.now())
 #-------------------------------------------------------
 
 # Command for testing
-
 input_file = filename + '.bin'
-
 test_file  = filename + '.test'
-
-# batcmd = 'fasttext test '+ input_file + ' ' + output_file + ' 2>$null'
-
 batcmd = './fasttext test '+ input_file + ' ' + test_file 
-
 st.write('fastText Begin...', datetime.datetime.now())
-
 result = subprocess.check_output(batcmd, shell=True)
-
 st.write('fastText End...', datetime.datetime.now())
-
 st.write(result.decode('utf-8'))
-
 original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
 
 # Save the model file to personal github
-cmd = "cp " + original_file + "  https://github.com/johnnytorresm/stackoverflow/blob/main/" + filename + '.bin'
+cmd = "cp " + original_file + "  https://github.com/johnnytorresm/stackoverflow/main/" + filename + '.bin'
 st.write(cmd)
 os.system(cmd)
 st.write('FastText model saved to GitHub...')
