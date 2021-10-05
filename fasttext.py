@@ -1,8 +1,58 @@
 # FastText Stackoverflow - version 5.0
-import streamlit as st
 
-# import os library
+#-----------------------------
+# Importing libraries
+#-----------------------------
+import streamlit as st
 import os
+import numpy as np 
+import pandas as pd
+import re
+import datetime
+import glob
+import string 
+import io
+import csv
+import codecs
+
+import nltk
+nltk.download("stopwords")
+nltk.download("punkt")
+nltk.download("wordnet")
+
+from datetime import timedelta
+
+from sklearn.feature_extraction.text import TfidfTransformer  
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+from sklearn.preprocessing import MultiLabelBinarizer
+
+from collections import Counter
+
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
+from sklearn.model_selection import train_test_split
+import sklearn.metrics as metrics
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+
+import ast
+from collections import Counter
+
+import warnings
+warnings.filterwarnings("ignore")
+
+# Upgrade pip
+os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
+st.write('pip has been upgraded...')
+
+st.write('\nLibraries have been imported...')
+
+st.write('\nImporting FastText...')
 
 # Cloning fastText from Facebook Research GitHub
 os.system('git clone https://github.com/facebookresearch/fastText.git')
@@ -31,58 +81,6 @@ st.write("*** copying files ***\n")
 
 os.system('ls -l *.txt')
 os.system('ls -l *.csv')
-
-#-----------------------------
-# Importing libraries
-#-----------------------------
-
-# Upgrade pip
-os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
-st.write('pip has been upgraded...')
-
-import numpy as np 
-import pandas as pd
-import re
-import datetime
-import glob
-import string 
-import io
-import csv
-import codecs
-
-import nltk
-nltk.download("stopwords")
-nltk.download("punkt")
-nltk.download("wordnet")
-
-from datetime import timedelta
-
-from sklearn.feature_extraction.text import TfidfTransformer  
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-from sklearn.preprocessing import MultiLabelBinarizer
-
-from collections import Counter
-
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer 
-from sklearn.model_selection import train_test_split
-
-import sklearn.metrics as metrics
-
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import f1_score
-
-import ast
-from collections import Counter
-
-import warnings
-warnings.filterwarnings("ignore")
-
-st.write('\nLibraries have been imported')
 
 #--------------------
 # Global Variables
@@ -382,7 +380,7 @@ st.write(result.decode('utf-8'))
 original_file = "/app/stackoverflow/filename" + '.bin'
 
 # Save the model file to personal github
-cmd = "cp " + original_file + "https://github.com/johnnytorresm/stackoverflow/blob/main"
+cmd = "cp " + original_file + "  https://github.com/johnnytorresm/stackoverflow/blob/main"
 os.system(cmd)
 st.write('FastText model saved to GitHub...')
 
@@ -397,33 +395,25 @@ question_file = open("question.txt", "w")
 input_file = filename + '.bin'
 
 # User is asked
-question = st.text_area("Please, enter your question below", "fin")
-st.write('The question was:')
-st.write(question)
+question = st.text_area("Please, enter your question below", "")
 
+if len(question)>0:
+    st.write('The question was:')
+    st.write(question)
 # Question is cleaned and lemmatized
-question2 = clean_txt(question)
-
+    question2 = clean_txt(question)
 # Question is written to a file
-n = question_file.write(question2)
-
+    n = question_file.write(question2)
 # Question file is closed
-question_file.close()
-
+    question_file.close()
 # FastText string command is assembled
-batcmd = './fasttext predict '+ input_file + ' question.txt 5 1>labels.csv'
-
+    batcmd = './fasttext predict '+ input_file + ' question.txt 5 1>labels.csv'
 # FastText commnd is executed. Output written to "labels.csv"
-result = subprocess.check_output(batcmd, shell=True)
-
+    result = subprocess.check_output(batcmd, shell=True)
 # labels are read and split into a list
-csv_reader = csv.reader(codecs.open('labels.csv', 'rU', 'utf-8'))
-
-lists_from_csv = []
-
-for row in csv_reader:
-    lists_from_csv.append(row)
-
-list_from_csv = list(tuple(remove_label(l,'__label__') for l in lists_from_csv[0][0].split()))
-
-st.write(list_from_csv)
+    csv_reader = csv.reader(codecs.open('labels.csv', 'rU', 'utf-8'))
+    lists_from_csv = []
+    for row in csv_reader:
+        lists_from_csv.append(row)
+    list_from_csv = list(tuple(remove_label(l,'__label__') for l in lists_from_csv[0][0].split()))
+    st.write(list_from_csv)
