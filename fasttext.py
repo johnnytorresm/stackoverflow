@@ -354,10 +354,15 @@ st.write('fastText Begin...', datetime.datetime.now())
 result = subprocess.check_output(batcmd, shell=True)
 st.write('fastText End...', datetime.datetime.now())
 st.write(result.decode('utf-8'))
-original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
 
 # Save the model file to personal github
-cmd = "cp " + original_file + "  https://github.com/johnnytorresm/stackoverflow/main/" + filename + '.bin'
+original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
+os.system('git add .')
+cmd = 'git commit -m ' + original_file 
+st.write(cmd)
+os.system(cmd)
+# cmd = "cp " + original_file + "  https://github.com/johnnytorresm/stackoverflow/main/" + filename + '.bin'
+cmd = 'git push origin https://github.com/johnnytorresm/stackoverflow/main/'
 st.write(cmd)
 os.system(cmd)
 st.write('FastText model saved to GitHub...')
