@@ -352,9 +352,9 @@ st.write('fastText End...', datetime.datetime.now())
 st.write(result.decode('utf-8'))
 
 # Save the model file to personal github
-cmd = 'git init'
-st.write(cmd)
-os.system(cmd)
+# cmd = 'git init'
+# st.write(cmd)
+# os.system(cmd)
 
 cmd = 'git config --global user.email ' + ' johnny.torres@gmail.com'
 st.write(cmd)
