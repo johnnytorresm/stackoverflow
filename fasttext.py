@@ -371,7 +371,7 @@ cmd = 'git commit -m ' + original_file
 st.write(cmd)
 os.system(cmd)
 
-cmd = 'git push origin https://github.com/johnnytorresm/stackoverflow/main/'
+cmd = 'git push origin main'
 st.write(cmd)
 os.system(cmd)
 
