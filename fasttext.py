@@ -136,9 +136,9 @@ def clean_txt(txt):
 #-----------------------------------------
 def print_score(y_true, y_pred, clf):
     st.write("Classifier: ", clf.__class__.__name__)
-    st.write("Precision score : {}".format(precision_score(y_true, y_pred, average='weighted')))
-    st.write("Recall score : {}".format(recall_score(y_true, y_pred, average='weighted')))
-    st.write("F1 score : {}".format(f1_score(y_true, y_pred, average='weighted')))
+    st.write("Precision score : {}".format(precision_score(y_true, y_pred, average='micro')))
+    st.write("Recall score : {}".format(recall_score(y_true, y_pred, average='micro')))
+    st.write("F1 score : {}".format(f1_score(y_true, y_pred, average='micro')))
     
 #-----------------------------------------
 # Receives a list of tags and returns
@@ -332,19 +332,13 @@ st.write('Ready ', test_file)
 #-------------------------------------------------------
 # Training the FastText model
 #-------------------------------------------------------
-
 st.write('FastText training Begin...', datetime.datetime.now())
 
 # Command for training 
-
 import subprocess
-
 filename = os.path.splitext(file2open)[0]
-
 input_file = filename + '.train'
-
 output_file = filename
-
 result_file = filename + ".result"
 
 batcmd = './fasttext supervised -input '+ input_file + ' -output ' + \
@@ -380,7 +374,8 @@ st.write(result.decode('utf-8'))
 original_file = "/app/stackoverflow/" + filename + '.bin'
 
 # Save the model file to personal github
-cmd = "cp " + original_file + "  https://github.com/johnnytorresm/stackoverflow/blob/main"
+cmd = "cp " + original_file + "  https://github.com/johnnytorresm/stackoverflow/blob/main/" + filename + '.bin'
+st.write(cmd)
 os.system(cmd)
 st.write('FastText model saved to GitHub...')
 
