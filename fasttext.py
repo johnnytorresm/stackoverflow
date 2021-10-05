@@ -281,13 +281,10 @@ st.write('Splitting into train and test')
 # Columns 'Labels' and 'Text' are then written to an external txt file for fasttext analysis (in OS mode)
 #----------------------------------------------------------------------------------------------------------
 train, test = train_test_split(posts, test_size=0.2)
-
 train['Labels'] = train['Tags'].apply(lambda x: labels(x))
 test['Labels'] = test['Tags'].apply(lambda x: labels(x))
-
 train = train.dropna()
 test = test.dropna()
-
 st.write(train[['Tags', 'Labels', 'Text']].head(10))
 st.write(test[['Tags', 'Labels', 'Text']].head(10))
 
@@ -295,7 +292,6 @@ st.write(test[['Tags', 'Labels', 'Text']].head(10))
 # It writes Labels and Text in FastText format to train.txt and test.txt files
 # Those files will be the input for FastText routines
 #-------------------------------------------------------
-
 train_file = os.path.splitext(file2open)[0] + '.train'
 test_file  = os.path.splitext(file2open)[0] + '.test'
 
@@ -356,8 +352,21 @@ st.write('fastText End...', datetime.datetime.now())
 st.write(result.decode('utf-8'))
 
 # Save the model file to personal github
+cmd = 'git init'
+st.write(cmd)
+os.system(cmd)
+
+cmd = 'git config --global user.email ' + ' johnny.torres@gmail.com'
+st.write(cmd)
+os.system(cmd)
+
+cmd = 'git config --global user.name ' + ' johnnytorresm'
+st.write(cmd)
+os.system(cmd)
+
 original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
 os.system('git add .')
+
 cmd = 'git commit -m ' + original_file 
 st.write(cmd)
 os.system(cmd)
