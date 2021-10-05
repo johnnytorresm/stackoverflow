@@ -361,6 +361,7 @@ os.system(cmd)
 
 cmd = 'git config --global user.name ' + ' johnnytorresm'
 st.write(cmd)
+print(cmd)
 os.system(cmd)
 
 original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
@@ -368,10 +369,17 @@ os.system('git add .')
 
 cmd = 'git commit -m ' + original_file 
 st.write(cmd)
+print(cmd)
 os.system(cmd)
 
-cmd = 'git push origin ' + 'https://github.com/johnnytorresm/stackoverflow'
+cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow'
 st.write(cmd)
+print(cmd)
+os.system(cmd)
+    
+cmd = 'git push origin ' 
+st.write(cmd)
+print(cmd)
 os.system(cmd)
 
 st.write('FastText model saved to GitHub...')
