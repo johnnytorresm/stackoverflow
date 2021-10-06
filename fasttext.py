@@ -1,30 +1,132 @@
-
 # FastText Stackoverflow - version 5.0
-
+#-----------------------------
+# Importing libraries
+#-----------------------------
 import streamlit as st
 import os
+import numpy as np 
+import pandas as pd
+import re
+import datetime
+import glob
+import string 
+import io
+import csv
+import codecs
+
+import nltk
+nltk.download("stopwords")
+nltk.download("punkt")
+nltk.download("wordnet")
+
+#--------------------
+# Global Variables
+#--------------------
+sw  = set(stopwords.words())
+
+# Exhaustive list of English prepositions to be added to stop words
+preps = pd.read_csv('other-stop-words.txt', header=None, names=['other-stop-words'])
+preps_set = set(preps['other-stop-words'].tolist())
+sw |= preps_set
+
+# Init the Wordnet Lemmatizer
+lemmatizer = WordNetLemmatizer()
+
+st.write('Global Variables have been defined')
+
+#-----------------------------------------
+# Function definitions
+#-----------------------------------------
+
+#----------------------------------------------------
+# clean_txt: Cleans a string, and then lemmatize it.
+#----------------------------------------------------
+def clean_txt(txt): 
+    # txt: string to clean
+
+    global sw, lemmatizer                # sw = English stop words; lemmatizer from WordNet
+
+    # 1. Lowercase 
+    txt = txt.lower()
+
+    # 2. Strip HTML code
+    txt = re.sub('<[^<]+?>', ' ', txt)
+
+    # 3. Strip punctuation signs
+    txt = re.sub('[^\w\s]', ' ', txt)
+    txt = re.sub('\*', ' ', txt)
+
+    # 4. remove stop words
+    txt_set = set(nltk.word_tokenize(txt))
+    txt_lst = [w for w in txt_set if (not w in sw)]
+    txt_set = set(txt_lst)
+    txt_lst = list(txt_set)
+
+    # 5. Lemmatisation
+    txt_lst = [lemmatizer.lemmatize(w, pos='v') for w in txt_lst]
+    txt = ' '.join([lemmatizer.lemmatize(w, pos='n') for w in txt_lst])
+
+    return txt
+
+#-----------------------------------------
+# Receives a list of tags and returns
+# a list of Labels in fasttext format
+#-----------------------------------------
+def labels(Tags):
+    y_labels = ' '
+    for t in Tags:
+        y_labels += '__label__'+ t + ' '
+    return y_labels
+
+#-----------------------------------------
+# most frequent tags in the corpus
+#-----------------------------------------
+def most_used_tags(tags, top_tags):
+    final_tags = []
+    for tag in tags:
+        if tag in top_tags['Tags'].values:
+            final_tags.append(tag)
+    return final_tags
+
+#-----------------------------------------
+# Remove "__label__" from FastText Labels
+#-----------------------------------------
+def remove_label(l,prefix)-> str:
+    if l.startswith(prefix):
+        return l[len(prefix):]
+    else:
+        return l[:]
+
+#---------------------------------------------
+# Sorts a dictionary by value. Returns a list.
+#---------------------------------------------
+def sort_tags(x):
+    if len(x)>0:
+        s = sorted(x.items(), key = lambda y:(y[1], y[0]), reverse = True)
+    else:
+        s = []
+    return s
+
+#---------------------------------------------
+# Top 5 values 
+#---------------------------------------------
+def top_tags(x):
+    s = []
+    i = 0
+    if len(x)>0:
+        while ((i<len(x)) and (i<5)):
+            s = s + [x[i][0]]
+            i += 1
+    else:
+        s = []
+    return s
+
+st.write('Functions have been defined')
 
 if not (os.path.isfile('corpus25k.bin')):
     #-----------------------------
-    # Importing libraries
+    # Importing more libraries
     #-----------------------------
-    import streamlit as st
-    import os
-    import numpy as np 
-    import pandas as pd
-    import re
-    import datetime
-    import glob
-    import string 
-    import io
-    import csv
-    import codecs
-
-    import nltk
-    nltk.download("stopwords")
-    nltk.download("punkt")
-    nltk.download("wordnet")
-
     from datetime import timedelta
 
     from sklearn.feature_extraction.text import TfidfTransformer  
@@ -33,20 +135,13 @@ if not (os.path.isfile('corpus25k.bin')):
 
     from sklearn.preprocessing import MultiLabelBinarizer
 
-    from collections import Counter
-
     from nltk.corpus import stopwords
     from nltk.tokenize import word_tokenize
     from nltk.stem import WordNetLemmatizer
 
     from sklearn.model_selection import train_test_split
-    import sklearn.metrics as metrics
-    from sklearn.metrics import precision_score
-    from sklearn.metrics import recall_score
-    from sklearn.metrics import f1_score
 
     import ast
-    from collections import Counter
 
     # Upgrade pip
     os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
@@ -79,109 +174,6 @@ if not (os.path.isfile('corpus25k.bin')):
 
     st.write("*** copying files ***\n")
 
-    #--------------------
-    # Global Variables
-    #--------------------
-    sw  = set(stopwords.words())
-
-    # Exhaustive list of English prepositions to be added to stop words
-    preps = pd.read_csv('other-stop-words.txt', header=None, names=['other-stop-words'])
-    preps_set = set(preps['other-stop-words'].tolist())
-    sw |= preps_set
-
-    # Init the Wordnet Lemmatizer
-    lemmatizer = WordNetLemmatizer()
-
-    st.write('Global Variables have been defined')
-
-    #-----------------------------------------
-    # Function definitions
-    #-----------------------------------------
-
-    #----------------------------------------------------
-    # clean_txt: Cleans a string, and then lemmatize it.
-    #----------------------------------------------------
-    def clean_txt(txt): 
-        # txt: string to clean
-
-        global sw, lemmatizer                # sw = English stop words; lemmatizer from WordNet
-
-        # 1. Lowercase 
-        txt = txt.lower()
-
-        # 2. Strip HTML code
-        txt = re.sub('<[^<]+?>', ' ', txt)
-
-        # 3. Strip punctuation signs
-        txt = re.sub('[^\w\s]', ' ', txt)
-        txt = re.sub('\*', ' ', txt)
-
-        # 4. remove stop words
-        txt_set = set(nltk.word_tokenize(txt))
-        txt_lst = [w for w in txt_set if (not w in sw)]
-        txt_set = set(txt_lst)
-        txt_lst = list(txt_set)
-
-        # 5. Lemmatisation
-        txt_lst = [lemmatizer.lemmatize(w, pos='v') for w in txt_lst]
-        txt = ' '.join([lemmatizer.lemmatize(w, pos='n') for w in txt_lst])
-
-        return txt
-
-    #-----------------------------------------
-    # Receives a list of tags and returns
-    # a list of Labels in fasttext format
-    #-----------------------------------------
-    def labels(Tags):
-        y_labels = ' '
-        for t in Tags:
-            y_labels += '__label__'+ t + ' '
-        return y_labels
-
-    #-----------------------------------------
-    # most frequent tags in the corpus
-    #-----------------------------------------
-    def most_used_tags(tags, top_tags):
-        final_tags = []
-        for tag in tags:
-            if tag in top_tags['Tags'].values:
-                final_tags.append(tag)
-        return final_tags
-
-    #-----------------------------------------
-    # Remove "__label__" from FastText Labels
-    #-----------------------------------------
-    def remove_label(l,prefix)-> str:
-        if l.startswith(prefix):
-            return l[len(prefix):]
-        else:
-            return l[:]
-
-    #---------------------------------------------
-    # Sorts a dictionary by value. Returns a list.
-    #---------------------------------------------
-    def sort_tags(x):
-        if len(x)>0:
-            s = sorted(x.items(), key = lambda y:(y[1], y[0]), reverse = True)
-        else:
-            s = []
-        return s
-
-    #---------------------------------------------
-    # Top 5 values 
-    #---------------------------------------------
-    def top_tags(x):
-        s = []
-        i = 0
-        if len(x)>0:
-            while ((i<len(x)) and (i<5)):
-                s = s + [x[i][0]]
-                i += 1
-        else:
-            s = []
-        return s
-
-    st.write('Functions have been defined')
 
     #--------------------------------
     # Reading data
