@@ -381,7 +381,7 @@ if not (os.path.isfile('corpus25k.bin')):
     # print(cmd)
     # os.system(cmd)
 
-    cmd = 'git push -u https://github.com/johnnytorresm/stackoverflow main' 
+    cmd = 'git push -u https://github.com/johnnytorresm/stackoverflow/main' 
     st.write(cmd)
     print(cmd)
     os.system(cmd)
