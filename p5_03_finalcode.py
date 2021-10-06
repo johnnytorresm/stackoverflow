@@ -9,44 +9,77 @@
 # Projet 5: Catégorisez automatiquement des questions
 #----------------------------------------------------
 
-#----------------------------------------------------
-#   Importing libraries
-#----------------------------------------------------
-import streamlit as st
-from pathlib import Path
+# FastText Stackoverflow - version 5.0
 
+#-----------------------------
+# Importing libraries
+#-----------------------------
+import streamlit as st
+import os
 import numpy as np 
 import pandas as pd
 import re
 import datetime
-import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download('wordnet')
+import glob
+import string 
+import io
 import csv
 import codecs
 
-import os
-import io
-import subprocess
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+import nltk
+nltk.download("stopwords")
+nltk.download("punkt")
+nltk.download("wordnet")
 
 from datetime import timedelta
 
-from ipywidgets import *
-# from tkinter import Tk, filedialog
-from IPython.display import clear_output, display
+from sklearn.feature_extraction.text import TfidfTransformer  
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-import warnings
-warnings.filterwarnings("ignore")
+from sklearn.preprocessing import MultiLabelBinarizer
 
-st.write("## Open Classrooms - Machine Learning Engineering")
-st.write("# Project 5 - Tag assignment for Stack Overflow")
-st.write("### Student: Johnny Torres  / Mentor: Julien Heduik\n")
+from collections import Counter
 
-st.write('Libraries have been imported')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
+from sklearn.model_selection import train_test_split
+import sklearn.metrics as metrics
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+
+import ast
+from collections import Counter
+
+# Upgrade pip
+os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
+st.write('pip has been upgraded...')
+
+st.write('\nLibraries have been imported...')
+
+# Cloning fastText from Facebook Research GitHub
+st.write('\nCloning fastText from Facebook Research GitHub...')
+os.system('git clone https://github.com/facebookresearch/fastText.git')
+os.chdir("fastText")
+st.write("Working directory changed to fastText...")
+
+# Building the fasttext modules
+os.system('make')
+
+st.write('FastText has been installed...')
+
+original_file = "/app/stackoverflow/other-stop-words.txt"
+cmd = "cp " + original_file + " . "
+os.system(cmd)
+
+original_file = "/app/stackoverflow/corpus25k.csv"
+cmd = "cp " + original_file + " . "
+os.system(cmd)
+
+st.write("*** copying files ***\n")
 
 #--------------------
 # Global Variables
@@ -92,9 +125,39 @@ def clean_txt(txt):
     txt_lst = list(txt_set)
     
     # 5. Lemmatisation
-    txt = ' '.join([lemmatizer.lemmatize(w, pos='v') for w in txt_lst])
+    txt_lst = [lemmatizer.lemmatize(w, pos='v') for w in txt_lst]
+    txt = ' '.join([lemmatizer.lemmatize(w, pos='n') for w in txt_lst])
     
     return txt
+
+#-----------------------------------------
+# Print a classifier's scores
+#-----------------------------------------
+def print_score(y_true, y_pred, clf):
+    st.write("Classifier: ", clf.__class__.__name__)
+    st.write("Precision score : {}".format(precision_score(y_true, y_pred, average='micro')))
+    st.write("Recall score : {}".format(recall_score(y_true, y_pred, average='micro')))
+    st.write("F1 score : {}".format(f1_score(y_true, y_pred, average='micro')))
+    
+#-----------------------------------------
+# Receives a list of tags and returns
+# a list of Labels in fasttext format
+#-----------------------------------------
+def labels(Tags):
+    y_labels = ' '
+    for t in Tags:
+        y_labels += '__label__'+ t + ' '
+    return y_labels
+
+#-----------------------------------------
+# most frequent tags in the corpus
+#-----------------------------------------
+def most_used_tags(tags, top_tags):
+    final_tags = []
+    for tag in tags:
+        if tag in top_tags['Tags'].values:
+            final_tags.append(tag)
+    return final_tags
     
 #-----------------------------------------
 # Remove "__label__" from FastText Labels
@@ -106,55 +169,236 @@ def remove_label(l,prefix)-> str:
         return l[:]
 
 #---------------------------------------------
-# Tags question entered by user
+# Sorts a dictionary by value. Returns a list.
 #---------------------------------------------
-
-def tagging():
-    user_input = st.text_area("Enter your question here below", "end", key = str(counter))
-    question_txt = clean_txt(user_input)
-    label_list = []
-    if (question_txt == "end"):
-        return label_list, False
+def sort_tags(x):
+    if len(x)>0:
+        s = sorted(x.items(), key = lambda y:(y[1], y[0]), reverse = True)
     else:
-    # Question is written to a file
-        question_file = open(r"question.txt","w")
-        n = question_file.write(question_txt)
-        # Question file is closed
-        question_file.close()
+        s = []
+    return s
 
-        # FastText string command is assembled. Output written to "lbl_lst.csv"
-        batcmd = 'fasttext predict train-corpus25k.bin' + ' question.txt 5 1>lbl_lst.csv'
+#---------------------------------------------
+# Top 5 values 
+#---------------------------------------------
+def top_tags(x):
+    s = []
+    i = 0
+    if len(x)>0:
+        while ((i<len(x)) and (i<5)):
+            s = s + [x[i][0]]
+            i += 1
+    else:
+        s = []
+    return s
 
-        # FastText commnd is executed
-        result = subprocess.check_output(batcmd, shell=True)
+st.write('Functions have been defined')
 
-        # labels are read and split into a list
-        labels = csv.reader(codecs.open('lbl_lst.csv', 'rU', 'utf-8'))
-        list_from_csv =list(labels)
-        if len(list_from_csv)>0:
-            label_list = list_from_csv[0]
-            label_list = label_list[0].split()
-            for i in range(0,len(label_list)):
-                label_list[i] = remove_label(label_list[i], '__label__')
-        return label_list, True
+#--------------------------------
+# Reading data
+#--------------------------------
+file2open = "corpus25k.csv"
+
+st.write('Reading data in...')
+posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
+
+# Number of records read
+st.write(posts.shape)
+st.write(posts.head())
         
-#--------------------
-# Main program
-#--------------------
+# counting nulls per column
+st.write(posts.isnull().sum())
 
-# Initialization of variables
+#----------------------------------------------------------------
+# Checking if Tags have been read as a single string or a series
+#-----------------------------------------------------------------
+if isinstance(posts['Tags'].iloc[0],str): # verifies if 'Tags' is of type "string"
+    posts['Tags'] = posts['Tags'].apply(lambda tag: ast.literal_eval(tag))
 
-counter=0
-keep_going = True
+#------------------------------------------------------
+# Flatten the "Tags" columns into a Series and then 
+# count the number of occurrences per item, putting
+# the results into a dataframe
+#------------------------------------------------------
+tag_series = pd.Series([item for sublist in posts['Tags'] for item in sublist])
+tag_df = tag_series.groupby(tag_series).size().rename_axis('Tags').reset_index(name='Nº of occurrences')
+tag_df = tag_df.sort_values(by=['Nº of occurrences'], ascending=False)
 
-# Main Loop
-while (keep_going):
-    results, keep_going = tagging()
-    if (len(results)!=0):
-        for l in results:   
-            st.write(l, end=' ')
-    counter += 1
-    if not(keep_going):
-        st.write("End of Project")
-        st.stop()
-st.stop()
+# Nº of Tags that appear more than 100 times across all messages
+series = tag_df['Nº of occurrences'].apply(lambda x: True if x > 10 else False)
+counting = len(series[series == True].index)
+st.write('Nº of Tags that appear more than 10 times across all messages:', counting)
+
+#-----------------------------------------
+# Top 100 tags
+#-----------------------------------------
+top_tags = tag_df[['Tags', 'Nº of occurrences']].head(100)
+
+#--------------------------
+# y = list of Tags list
+#--------------------------
+posts['Tags'] = posts['Tags'].apply(lambda tags: most_used_tags(tags, top_tags))
+posts = posts.loc[posts['Tags'].str.len() > 0]
+y = posts['Tags']
+st.write('Ready - Nº of chosen tags', len(y))
+
+#------------------------------------
+# Apply MultiLabelBinarizer to Tags
+#------------------------------------
+mlb = MultiLabelBinarizer()
+y = mlb.fit_transform(posts['Tags'])
+
+#------------
+# TD-IDF 
+#------------
+tfidf = TfidfVectorizer(analyzer="word", max_features=1000, ngram_range=(1,1))
+X = tfidf.fit_transform(posts['Text'])
+st.write('TF-IDF ready')
+
+#------------------------------
+# Split into train and test
+#------------------------------
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+X_train.shape,  X_test.shape,  y_train.shape, y_test.shape
+st.write('Splitted into train and test')
+
+#---------------------------------------------------------------------------------------------------------
+# Preparation of tags for fasttext 
+# The string "__label__" is attached to each tag to create a new column named 'Labels'.
+# Columns 'Labels' and 'Text' are then written to an external txt file for fasttext analysis (in OS mode)
+#----------------------------------------------------------------------------------------------------------
+train, test = train_test_split(posts, test_size=0.2)
+train['Labels'] = train['Tags'].apply(lambda x: labels(x))
+test['Labels'] = test['Tags'].apply(lambda x: labels(x))
+train = train.dropna()
+test = test.dropna()
+
+#-------------------------------------------------------
+# It writes Labels and Text in FastText format to train.txt and test.txt files
+# Those files will be the input for FastText routines
+#-------------------------------------------------------
+train_file = os.path.splitext(file2open)[0] + '.train'
+test_file  = os.path.splitext(file2open)[0] + '.test'
+
+train.to_csv(train_file, 
+             header=None, 
+             index=None, 
+             mode='a', 
+             encoding='utf-8', 
+             columns=['Labels', 'Text'],
+             sep=' ',
+             escapechar=' ',
+             quoting=csv.QUOTE_NONE,
+             quotechar=' '
+            )
+st.write('Ready ', train_file)
+
+test.to_csv(test_file,
+            header=None, 
+            index=None, 
+            mode='a', 
+            encoding='utf-8', 
+            columns=['Labels', 'Text'],
+            sep=' ',
+            escapechar=' ',
+            quoting=csv.QUOTE_NONE,
+            quotechar=' '
+           )
+st.write('Ready ', test_file)
+
+#-------------------------------------------------------
+# Training the FastText model
+#-------------------------------------------------------
+st.write('FastText training Begin...', datetime.datetime.now())
+
+# Command for training 
+import subprocess
+filename = os.path.splitext(file2open)[0]
+input_file = filename + '.train'
+output_file = filename
+result_file = filename + ".result"
+batcmd = './fasttext supervised -input '+ input_file + ' -output ' + \
+                                          output_file + ' -dim 10 -lr 1 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
+                                          '> ' + result_file
+result = subprocess.check_output(batcmd, shell=True)
+st.write('FastText training End...', datetime.datetime.now())
+
+#-------------------------------------------------------
+# Testing the fast text model
+#-------------------------------------------------------
+# Command for testing
+input_file = filename + '.bin'
+test_file  = filename + '.test'
+batcmd = './fasttext test '+ input_file + ' ' + test_file 
+st.write('fastText Begin...', datetime.datetime.now())
+result = subprocess.check_output(batcmd, shell=True)
+st.write('fastText End...', datetime.datetime.now())
+st.write(result.decode('utf-8'))
+
+# Save the model file to personal github
+# cmd = 'git init'
+# st.write(cmd)
+# os.system(cmd)
+
+cmd = 'git config --global user.email ' + ' 64198505+johnnytorresm@users.noreply.github.com'
+st.write(cmd)
+print(cmd)
+os.system(cmd)
+
+cmd = 'git config --global user.name ' + ' johnnytorresm'
+st.write(cmd)
+print(cmd)
+os.system(cmd)
+
+original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
+os.system('git add .')
+
+cmd = 'git commit -m ' + original_file 
+st.write(cmd)
+print(cmd)
+os.system(cmd)
+
+# cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow'
+# st.write(cmd)
+# print(cmd)
+# os.system(cmd)
+
+cmd = 'git push -u https://github.com/johnnytorresm/stackoverflow main' 
+st.write(cmd)
+print(cmd)
+os.system(cmd)
+
+st.write('FastText model saved to GitHub...')
+
+#-------------------------------------------------------
+# Predicting labels
+#-------------------------------------------------------
+# File where question is written
+question_file = open("question.txt", "w")
+
+# File that contains the model
+input_file = filename + '.bin'
+
+# User is asked
+question = st.text_area("Please, enter your post below", "")
+
+if len(question)>0:
+    st.write('The question was:')
+    st.write(question)
+# Question is cleaned and lemmatized
+    question2 = clean_txt(question)
+# Question is written to a file
+    n = question_file.write(question2)
+# Question file is closed
+    question_file.close()
+# FastText string command is assembled
+    batcmd = './fasttext predict '+ input_file + ' question.txt 5 1>labels.csv'
+# FastText commnd is executed. Output written to "labels.csv"
+    result = subprocess.check_output(batcmd, shell=True)
+# labels are read and split into a list
+    csv_reader = csv.reader(codecs.open('labels.csv', 'rU', 'utf-8'))
+    lists_from_csv = []
+    for row in csv_reader:
+        lists_from_csv.append(row)
+    list_from_csv = list(tuple(remove_label(l,'__label__') for l in lists_from_csv[0][0].split()))
+    st.write(list_from_csv)
