@@ -189,16 +189,16 @@ st.write('Functions have been defined')
 # Reading data
 #--------------------------------
 file2open = "corpus25k.csv"
-
 st.write('Reading data in...')
 posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
+st.write('Dataframe created...')
 
-# Number of records read
-st.write(posts.shape)
-st.write(posts.head())
+# # Number of records read
+# st.write(posts.shape)
+# # st.write(posts.head())
         
-# counting nulls per column
-st.write(posts.isnull().sum())
+# # counting nulls per column
+# st.write(posts.isnull().sum())
 
 #----------------------------------------------------------------
 # Checking if Tags have been read as a single string or a series
@@ -314,47 +314,47 @@ batcmd = './fasttext supervised -input '+ input_file + ' -output ' + \
 result = subprocess.check_output(batcmd, shell=True)
 st.write('FastText training End...', datetime.datetime.now())
 
-#-------------------------------------------------------
-# Testing the fast text model
-#-------------------------------------------------------
-# Command for testing
-input_file = filename + '.bin'
-test_file  = filename + '.test'
-batcmd = './fasttext test '+ input_file + ' ' + test_file 
-st.write('fastText Begin...', datetime.datetime.now())
-result = subprocess.check_output(batcmd, shell=True)
-st.write('fastText End...', datetime.datetime.now())
-st.write(result.decode('utf-8'))
+# #-------------------------------------------------------
+# # Testing the fast text model
+# #-------------------------------------------------------
+# # Command for testing
+# input_file = filename + '.bin'
+# test_file  = filename + '.test'
+# batcmd = './fasttext test '+ input_file + ' ' + test_file 
+# st.write('fastText Begin...', datetime.datetime.now())
+# result = subprocess.check_output(batcmd, shell=True)
+# st.write('fastText End...', datetime.datetime.now())
+# st.write(result.decode('utf-8'))
 
-cmd = 'git config --global user.email ' + ' 64198505+johnnytorresm@users.noreply.github.com'
-st.write(cmd)
-print(cmd)
-os.system(cmd)
-
-cmd = 'git config --global user.name ' + ' johnnytorresm'
-st.write(cmd)
-print(cmd)
-os.system(cmd)
-
-original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
-os.system('git add .')
-
-cmd = 'git commit -m ' + original_file 
-st.write(cmd)
-print(cmd)
-os.system(cmd)
-
-# cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow'
+# cmd = 'git config --global user.email ' + ' 64198505+johnnytorresm@users.noreply.github.com'
 # st.write(cmd)
 # print(cmd)
 # os.system(cmd)
 
-cmd = 'git push -u https://github.com/johnnytorresm/stackoverflow main' 
-st.write(cmd)
-print(cmd)
-os.system(cmd)
+# cmd = 'git config --global user.name ' + ' johnnytorresm'
+# st.write(cmd)
+# print(cmd)
+# os.system(cmd)
 
-st.write('FastText model saved to GitHub...')
+# original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
+# os.system('git add .')
+
+# cmd = 'git commit -m ' + original_file 
+# st.write(cmd)
+# print(cmd)
+# os.system(cmd)
+
+# # cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow'
+# # st.write(cmd)
+# # print(cmd)
+# # os.system(cmd)
+
+# cmd = 'git push -u https://github.com/johnnytorresm/stackoverflow main' 
+# st.write(cmd)
+# print(cmd)
+# os.system(cmd)
+
+# st.write('FastText model saved to GitHub...')
 
 #-------------------------------------------------------
 # Predicting labels
