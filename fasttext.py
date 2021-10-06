@@ -300,7 +300,7 @@ if not (os.path.isfile('corpus25k.bin')):
     #-------------------------------------------------------
     # Training the FastText model
     #-------------------------------------------------------
-    st.write('FastText training Begin...', datetime.datetime.now())
+    st.write('FastText training begins...', datetime.datetime.now())
 
     # Command for training 
     import subprocess
@@ -312,7 +312,7 @@ if not (os.path.isfile('corpus25k.bin')):
                                               output_file + ' -dim 100 -lr 1 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
                                               '> ' + result_file
     result = subprocess.check_output(batcmd, shell=True)
-    st.write('FastText training End...', datetime.datetime.now())
+    st.write('FastText training ends...', datetime.datetime.now())
 
     #-------------------------------------------------------
     # Testing the fast text model
@@ -321,9 +321,9 @@ if not (os.path.isfile('corpus25k.bin')):
     input_file = filename + '.bin'
     test_file  = filename + '.test'
     batcmd = './fasttext test '+ input_file + ' ' + test_file 
-    st.write('fastText Begin...', datetime.datetime.now())
+    st.write('fastText testing begins...', datetime.datetime.now())
     result = subprocess.check_output(batcmd, shell=True)
-    st.write('fastText End...', datetime.datetime.now())
+    st.write('fastText testing ends...', datetime.datetime.now())
     st.write(result.decode('utf-8'))
 
     # Save the model file to personal github
@@ -343,17 +343,14 @@ if not (os.path.isfile('corpus25k.bin')):
     cmd = 'git commit -m ' + original_file 
     os.system(cmd)
 
-    # cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow'
-    # st.write(cmd)
-    # print(cmd)
-    # os.system(cmd)
+# cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow'
+# os.system(cmd)
 
     cmd = 'git push -u https://github.com/johnnytorresm/stackoverflow/main' 
-    st.write(cmd)
-    print(cmd)
     os.system(cmd)
 
     st.write('FastText model saved to GitHub...')
+
 #-------------------------------------------------------
 # Predicting labels
 #-------------------------------------------------------
