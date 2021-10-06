@@ -205,8 +205,6 @@ if not (os.path.isfile('corpus25k.bin')):
     if isinstance(posts['Tags'].iloc[0],str): # verifies if 'Tags' is of type "string"
         posts['Tags'] = posts['Tags'].apply(lambda tag: ast.literal_eval(tag))
 
-    st.write('Ready')
-
     #------------------------------------------------------
     # Flatten the "Tags" columns into a Series and then 
     # count the number of occurrences per item, putting
@@ -215,7 +213,6 @@ if not (os.path.isfile('corpus25k.bin')):
     tag_series = pd.Series([item for sublist in posts['Tags'] for item in sublist])
     tag_df = tag_series.groupby(tag_series).size().rename_axis('Tags').reset_index(name='Nº of occurrences')
     tag_df = tag_df.sort_values(by=['Nº of occurrences'], ascending=False)
-    tag_df.head(20)
 
     # Nº of Tags that appear more than 100 times across all messages
 
@@ -228,7 +225,6 @@ if not (os.path.isfile('corpus25k.bin')):
     # Top 100 tags
     #-----------------------------------------
     top_tags = tag_df[['Tags', 'Nº of occurrences']].head(100)
-    st.write(top_tags)
 
     #--------------------------
     # y = list of Tags list
@@ -243,7 +239,6 @@ if not (os.path.isfile('corpus25k.bin')):
     #------------------------------------
     mlb = MultiLabelBinarizer()
     y = mlb.fit_transform(posts['Tags'])
-    st.write(y[0:10,0:10])
 
     #------------
     # TD-IDF 
@@ -256,7 +251,6 @@ if not (os.path.isfile('corpus25k.bin')):
     # Split into train and test
     #------------------------------
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-    X_train.shape,  X_test.shape,  y_train.shape, y_test.shape
     st.write('Splitted into train and test')
 
     #---------------------------------------------------------------------------------------------------------
@@ -315,7 +309,7 @@ if not (os.path.isfile('corpus25k.bin')):
     output_file = filename
     result_file = filename + ".result"
     batcmd = './fasttext supervised -input '+ input_file + ' -output ' + \
-                                              output_file + ' -dim 10 -lr 1 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
+                                              output_file + ' -dim 100 -lr 1 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
                                               '> ' + result_file
     result = subprocess.check_output(batcmd, shell=True)
     st.write('FastText training End...', datetime.datetime.now())
@@ -338,20 +332,15 @@ if not (os.path.isfile('corpus25k.bin')):
     # os.system(cmd)
 
     cmd = 'git config --global user.email ' + ' jtorresm@hotmail.com'
-    st.write(cmd)
     os.system(cmd)
 
     cmd = 'git config --global user.name ' + ' johnnytorresm'
-    st.write(cmd)
-    print(cmd)
     os.system(cmd)
 
     original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
     os.system('git add .')
 
     cmd = 'git commit -m ' + original_file 
-    st.write(cmd)
-    print(cmd)
     os.system(cmd)
 
     # cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow'
@@ -365,34 +354,33 @@ if not (os.path.isfile('corpus25k.bin')):
     os.system(cmd)
 
     st.write('FastText model saved to GitHub...')
-else:
 #-------------------------------------------------------
 # Predicting labels
 #-------------------------------------------------------
 # File where posts are written
-    question_file = open("question.txt", "w")
+question_file = open("question.txt", "w")
 
-    # File that contains the model
-    input_file = filename + '.bin'
+# File that contains the model
+input_file = filename + '.bin'
 
-    # User is asked
-    question = st.text_area("Please, enter your post below", "")
+# User is asked
+question = st.text_area("Please, enter your post below", "")
 
-    if len(question)>0:
-    # Question is cleaned and lemmatized
-        question2 = clean_txt(question)
-    # Question is written to a file
-        n = question_file.write(question2)
-    # Question file is closed
-        question_file.close()
-    # FastText string command is assembled
-        batcmd = './fasttext predict '+ input_file + ' question.txt 5 1>labels.csv'
-    # FastText commnd is executed. Output written to "labels.csv"
-        result = subprocess.check_output(batcmd, shell=True)
-    # labels are read and split into a list
-        csv_reader = csv.reader(codecs.open('labels.csv', 'rU', 'utf-8'))
-        lists_from_csv = []
-        for row in csv_reader:
-            lists_from_csv.append(row)
-        list_from_csv = list(tuple(remove_label(l,'__label__') for l in lists_from_csv[0][0].split()))
-        st.write(list_from_csv)
+if len(question)>0:
+# Question is cleaned and lemmatized
+    question2 = clean_txt(question)
+# Question is written to a file
+    n = question_file.write(question2)
+# Question file is closed
+    question_file.close()
+# FastText string command is assembled
+    batcmd = './fasttext predict '+ input_file + ' question.txt 5 1>labels.csv'
+# FastText commnd is executed. Output written to "labels.csv"
+    result = subprocess.check_output(batcmd, shell=True)
+# labels are read and split into a list
+    csv_reader = csv.reader(codecs.open('labels.csv', 'rU', 'utf-8'))
+    lists_from_csv = []
+    for row in csv_reader:
+        lists_from_csv.append(row)
+    list_from_csv = list(tuple(remove_label(l,'__label__') for l in lists_from_csv[0][0].split()))
+    st.write(list_from_csv)
