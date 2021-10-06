@@ -81,9 +81,6 @@ if not (os.path.isfile('corpus25k.bin')):
 
     st.write("*** copying files ***\n")
 
-    os.system('ls -l *.txt')
-    os.system('ls -l *.csv')
-
     #--------------------
     # Global Variables
     #--------------------
@@ -132,15 +129,6 @@ if not (os.path.isfile('corpus25k.bin')):
         txt = ' '.join([lemmatizer.lemmatize(w, pos='n') for w in txt_lst])
 
         return txt
-
-    #-----------------------------------------
-    # Print a classifier's scores
-    #-----------------------------------------
-    def print_score(y_true, y_pred, clf):
-        st.write("Classifier: ", clf.__class__.__name__)
-        st.write("Precision score : {}".format(precision_score(y_true, y_pred, average='micro')))
-        st.write("Recall score : {}".format(recall_score(y_true, y_pred, average='micro')))
-        st.write("F1 score : {}".format(f1_score(y_true, y_pred, average='micro')))
 
     #-----------------------------------------
     # Receives a list of tags and returns
@@ -207,7 +195,6 @@ if not (os.path.isfile('corpus25k.bin')):
 
     # Number of records read
     st.write(posts.shape)
-    st.write(posts.head())
 
     # counting nulls per column
     st.write(posts.isnull().sum())
@@ -216,9 +203,7 @@ if not (os.path.isfile('corpus25k.bin')):
     # Checking if Tags have been read as a single string or a series
     #-----------------------------------------------------------------
     if isinstance(posts['Tags'].iloc[0],str): # verifies if 'Tags' is of type "string"
-        st.write(posts['Tags'].iloc[0])
         posts['Tags'] = posts['Tags'].apply(lambda tag: ast.literal_eval(tag))
-        st.write(posts['Tags'].iloc[0])
 
     st.write('Ready')
 
@@ -253,11 +238,6 @@ if not (os.path.isfile('corpus25k.bin')):
     y = posts['Tags']
     st.write('Ready - Nº of chosen tags', len(y))
 
-    #--------------------
-    # Display results
-    #--------------------
-    st.write(posts.head()), st.write(y)
-
     #------------------------------------
     # Apply MultiLabelBinarizer to Tags
     #------------------------------------
@@ -277,7 +257,7 @@ if not (os.path.isfile('corpus25k.bin')):
     #------------------------------
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
     X_train.shape,  X_test.shape,  y_train.shape, y_test.shape
-    st.write('Splitting into train and test')
+    st.write('Splitted into train and test')
 
     #---------------------------------------------------------------------------------------------------------
     # Preparation of tags for fasttext 
@@ -289,8 +269,6 @@ if not (os.path.isfile('corpus25k.bin')):
     test['Labels'] = test['Tags'].apply(lambda x: labels(x))
     train = train.dropna()
     test = test.dropna()
-    st.write(train[['Tags', 'Labels', 'Text']].head(10))
-    st.write(test[['Tags', 'Labels', 'Text']].head(10))
 
     #-------------------------------------------------------
     # It writes Labels and Text in FastText format to train.txt and test.txt files
