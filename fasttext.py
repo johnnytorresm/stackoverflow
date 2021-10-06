@@ -355,7 +355,7 @@ st.write(result.decode('utf-8'))
 # st.write(cmd)
 # os.system(cmd)
 
-cmd = 'git config --global user.email ' + ' 64198505+johnnytorresm@users.noreply.github.com'
+cmd = 'git config --global user.email ' + ' jtorresm@hotmail.com'
 st.write(cmd)
 os.system(cmd)
 
