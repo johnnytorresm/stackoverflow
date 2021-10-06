@@ -47,18 +47,18 @@ from nltk.stem import WordNetLemmatizer
 
 from sklearn.model_selection import train_test_split
 import sklearn.metrics as metrics
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import f1_score
+# from sklearn.metrics import precision_score
+# from sklearn.metrics import recall_score
+# from sklearn.metrics import f1_score
 
 import ast
 from collections import Counter
 
+st.write('\nLibraries have been imported...')
+
 # Upgrade pip
 os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
 st.write('pip has been upgraded...')
-
-st.write('\nLibraries have been imported...')
 
 # Cloning fastText from Facebook Research GitHub
 st.write('\nCloning fastText from Facebook Research GitHub...')
@@ -129,15 +129,6 @@ def clean_txt(txt):
     txt = ' '.join([lemmatizer.lemmatize(w, pos='n') for w in txt_lst])
     
     return txt
-
-#-----------------------------------------
-# Print a classifier's scores
-#-----------------------------------------
-def print_score(y_true, y_pred, clf):
-    st.write("Classifier: ", clf.__class__.__name__)
-    st.write("Precision score : {}".format(precision_score(y_true, y_pred, average='micro')))
-    st.write("Recall score : {}".format(recall_score(y_true, y_pred, average='micro')))
-    st.write("F1 score : {}".format(f1_score(y_true, y_pred, average='micro')))
     
 #-----------------------------------------
 # Receives a list of tags and returns
@@ -334,11 +325,6 @@ st.write('fastText Begin...', datetime.datetime.now())
 result = subprocess.check_output(batcmd, shell=True)
 st.write('fastText End...', datetime.datetime.now())
 st.write(result.decode('utf-8'))
-
-# Save the model file to personal github
-# cmd = 'git init'
-# st.write(cmd)
-# os.system(cmd)
 
 cmd = 'git config --global user.email ' + ' 64198505+johnnytorresm@users.noreply.github.com'
 st.write(cmd)
