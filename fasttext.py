@@ -1,3 +1,4 @@
+
 # FastText Stackoverflow - version 5.0
 
 import streamlit as st
@@ -46,9 +47,6 @@ if not (os.path.isfile('corpus25k.bin')):
 
     import ast
     from collections import Counter
-
-    import warnings
-    warnings.filterwarnings("ignore")
 
     # Upgrade pip
     os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
@@ -194,10 +192,7 @@ if not (os.path.isfile('corpus25k.bin')):
     posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
 
     # Number of records read
-    st.write(posts.shape)
-
-    # counting nulls per column
-    st.write(posts.isnull().sum())
+    # st.write(posts.shape)
 
     #----------------------------------------------------------------
     # Checking if Tags have been read as a single string or a series
@@ -215,10 +210,8 @@ if not (os.path.isfile('corpus25k.bin')):
     tag_df = tag_df.sort_values(by=['Nº of occurrences'], ascending=False)
 
     # Nº of Tags that appear more than 100 times across all messages
-
     series = tag_df['Nº of occurrences'].apply(lambda x: True if x > 10 else False)
     counting = len(series[series == True].index)
-
     st.write('Nº of Tags that appear more than 10 times across all messages:', counting)
 
     #-----------------------------------------
@@ -304,7 +297,7 @@ if not (os.path.isfile('corpus25k.bin')):
 
     # Command for training 
     import subprocess
-    filename = os.path.splitext(file2open)[0]
+    filename = 'corpus25k'
     input_file = filename + '.train'
     output_file = filename
     result_file = filename + ".result"
@@ -358,7 +351,7 @@ if not (os.path.isfile('corpus25k.bin')):
 question_file = open("question.txt", "w")
 
 # File that contains the model
-input_file = filename + '.bin'
+input_file = 'corpus25k.bin'
 
 # User is asked
 question = st.text_area("Please, enter your post below", "")
