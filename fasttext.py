@@ -1,23 +1,19 @@
 # FastText Stackoverflow - version 5.0
 #-----------------------------
-# Importing libraries
+# Importing libraries - part 1
 #-----------------------------
 import streamlit as st
 import os
 import numpy as np 
 import pandas as pd
-import re
-import datetime
-import glob
-import string 
-import io
-import csv
-import codecs
 
 import nltk
 nltk.download("stopwords")
 nltk.download("punkt")
 nltk.download("wordnet")
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 
 #--------------------
 # Global Variables
@@ -33,6 +29,16 @@ sw |= preps_set
 lemmatizer = WordNetLemmatizer()
 
 st.write('Global Variables have been defined')
+
+#-----------------------------
+# Importing libraries - part 2
+#-----------------------------
+import re
+import datetime
+import glob
+import string 
+import io
+import codecs
 
 #-----------------------------------------
 # Function definitions
@@ -135,10 +141,6 @@ if not (os.path.isfile('corpus25k.bin')):
 
     from sklearn.preprocessing import MultiLabelBinarizer
 
-    from nltk.corpus import stopwords
-    from nltk.tokenize import word_tokenize
-    from nltk.stem import WordNetLemmatizer
-
     from sklearn.model_selection import train_test_split
 
     import ast
@@ -173,7 +175,6 @@ if not (os.path.isfile('corpus25k.bin')):
     os.system(cmd)
 
     st.write("*** copying files ***\n")
-
 
     #--------------------------------
     # Reading data
