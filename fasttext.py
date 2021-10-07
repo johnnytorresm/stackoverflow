@@ -39,6 +39,7 @@ import glob
 import string 
 import io
 import codecs
+import csv
 
 #-----------------------------------------
 # Function definitions
