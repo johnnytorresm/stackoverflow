@@ -187,7 +187,7 @@ if not (os.path.isfile('corpus25k.bin')):
 
     # Number of records read
     # st.write(posts.shape)
-
+ 
     #----------------------------------------------------------------
     # Checking if Tags have been read as a single string or a series
     #-----------------------------------------------------------------
