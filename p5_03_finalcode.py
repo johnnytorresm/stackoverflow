@@ -54,22 +54,15 @@ import sklearn.metrics as metrics
 import ast
 from collections import Counter
 
-st.write('\nLibraries have been imported...')
-
 # Upgrade pip
 os.system('/home/appuser/venv/bin/python -m pip install --upgrade pip')
-st.write('pip has been upgraded...')
 
 # Cloning fastText from Facebook Research GitHub
-st.write('\nCloning fastText from Facebook Research GitHub...')
 os.system('git clone https://github.com/facebookresearch/fastText.git')
 os.chdir("fastText")
-st.write("Working directory changed to fastText...")
 
 # Building the fasttext modules
 os.system('make')
-
-st.write('FastText has been installed...')
 
 original_file = "/app/stackoverflow/other-stop-words.txt"
 cmd = "cp " + original_file + " . "
@@ -78,8 +71,6 @@ os.system(cmd)
 original_file = "/app/stackoverflow/corpus25k.csv"
 cmd = "cp " + original_file + " . "
 os.system(cmd)
-
-st.write("*** copying files ***\n")
 
 #--------------------
 # Global Variables
@@ -189,9 +180,7 @@ st.write('Functions have been defined')
 # Reading data
 #--------------------------------
 file2open = "corpus25k.csv"
-st.write('Reading data in...')
 posts = pd.read_csv(file2open, usecols=['Id', 'Tags', 'Text'])
-st.write('Dataframe created...')
 
 # # Number of records read
 # st.write(posts.shape)
@@ -218,7 +207,6 @@ tag_df = tag_df.sort_values(by=['Nº of occurrences'], ascending=False)
 # Nº of Tags that appear more than 100 times across all messages
 series = tag_df['Nº of occurrences'].apply(lambda x: True if x > 10 else False)
 counting = len(series[series == True].index)
-st.write('Nº of Tags that appear more than 10 times across all messages:', counting)
 
 #-----------------------------------------
 # Top 100 tags
@@ -231,7 +219,6 @@ top_tags = tag_df[['Tags', 'Nº of occurrences']].head(100)
 posts['Tags'] = posts['Tags'].apply(lambda tags: most_used_tags(tags, top_tags))
 posts = posts.loc[posts['Tags'].str.len() > 0]
 y = posts['Tags']
-st.write('Ready - Nº of chosen tags', len(y))
 
 #------------------------------------
 # Apply MultiLabelBinarizer to Tags
@@ -244,7 +231,6 @@ y = mlb.fit_transform(posts['Tags'])
 #------------
 tfidf = TfidfVectorizer(analyzer="word", max_features=1000, ngram_range=(1,1))
 X = tfidf.fit_transform(posts['Text'])
-st.write('TF-IDF ready')
 
 #------------------------------
 # Split into train and test
@@ -282,7 +268,6 @@ train.to_csv(train_file,
              quoting=csv.QUOTE_NONE,
              quotechar=' '
             )
-st.write('Ready ', train_file)
 
 test.to_csv(test_file,
             header=None, 
@@ -295,13 +280,10 @@ test.to_csv(test_file,
             quoting=csv.QUOTE_NONE,
             quotechar=' '
            )
-st.write('Ready ', test_file)
 
 #-------------------------------------------------------
 # Training the FastText model
 #-------------------------------------------------------
-st.write('FastText training Begin...', datetime.datetime.now())
-
 # Command for training 
 import subprocess
 filename = os.path.splitext(file2open)[0]
@@ -312,49 +294,6 @@ batcmd = './fasttext supervised -input '+ input_file + ' -output ' + \
                                           output_file + ' -dim 10 -lr 1 -wordNgrams 1 -minCount 1 -bucket 10000000 -epoch 25' + \
                                           '> ' + result_file
 result = subprocess.check_output(batcmd, shell=True)
-st.write('FastText training End...', datetime.datetime.now())
-
-# #-------------------------------------------------------
-# # Testing the fast text model
-# #-------------------------------------------------------
-# # Command for testing
-# input_file = filename + '.bin'
-# test_file  = filename + '.test'
-# batcmd = './fasttext test '+ input_file + ' ' + test_file 
-# st.write('fastText Begin...', datetime.datetime.now())
-# result = subprocess.check_output(batcmd, shell=True)
-# st.write('fastText End...', datetime.datetime.now())
-# st.write(result.decode('utf-8'))
-
-# cmd = 'git config --global user.email ' + ' 64198505+johnnytorresm@users.noreply.github.com'
-# st.write(cmd)
-# print(cmd)
-# os.system(cmd)
-
-# cmd = 'git config --global user.name ' + ' johnnytorresm'
-# st.write(cmd)
-# print(cmd)
-# os.system(cmd)
-
-# original_file = "/app/stackoverflow/fastText/" + filename + '.bin'
-# os.system('git add .')
-
-# cmd = 'git commit -m ' + original_file 
-# st.write(cmd)
-# print(cmd)
-# os.system(cmd)
-
-# # cmd = 'git remote add origin ' + 'https://github.com/johnnytorresm/stackoverflow'
-# # st.write(cmd)
-# # print(cmd)
-# # os.system(cmd)
-
-# cmd = 'git push -u https://github.com/johnnytorresm/stackoverflow main' 
-# st.write(cmd)
-# print(cmd)
-# os.system(cmd)
-
-# st.write('FastText model saved to GitHub...')
 
 #-------------------------------------------------------
 # Predicting labels
