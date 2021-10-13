@@ -4,6 +4,7 @@
 #-----------------------------
 import streamlit as st
 import os
+import subprocess
 import numpy as np 
 import pandas as pd
 
@@ -290,7 +291,6 @@ if not (os.path.isfile('corpus25k.bin')):
     st.write('FastText training begins...', datetime.datetime.now())
 
     # Command for training 
-    import subprocess
     filename = 'corpus25k'
     input_file = filename + '.train'
     output_file = filename
