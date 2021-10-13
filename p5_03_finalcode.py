@@ -85,8 +85,6 @@ sw |= preps_set
 # Init the Wordnet Lemmatizer
 lemmatizer = WordNetLemmatizer()
 
-st.write('Global Variables have been defined')
-
 #-----------------------------------------
 # Function definitions
 #-----------------------------------------
@@ -173,8 +171,6 @@ def top_tags(x):
     else:
         s = []
     return s
-
-st.write('Functions have been defined')
 
 #--------------------------------
 # Reading data
