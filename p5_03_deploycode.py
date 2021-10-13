@@ -26,7 +26,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-st.write('Initializing... wait a few moments..."
+st.write('Initializing... wait a few moments...')
 
 #--------------------
 # Global Variables
