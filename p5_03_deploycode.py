@@ -26,6 +26,8 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
+st.write('Projet 5 - Open Classrooms')
+st.write('Categorizing StackOverFlow posts...')
 st.write('Initializing... wait a few moments...')
 
 #--------------------
